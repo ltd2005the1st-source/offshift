@@ -10,6 +10,7 @@ import { ms, useTheme } from '../../theme/theme';
 import { Field, TimeStepper } from '../../ui/Field';
 import { dur, range, relDay } from '../../ui/format';
 import { Button, Card, Empty, PageHeader, Pill, Section, Segmented } from '../../ui/kit';
+import { inkOn, radius } from '../../theme/tokens';
 import { Press } from '../../ui/Press';
 import { Screen } from '../../ui/Screen';
 import { Sheet, useToast } from '../../ui/Sheet';
@@ -52,7 +53,7 @@ export default function Life() {
     <Screen>
       <PageHeader title="Off the clock" sub="What has to happen, when you have time for it, and who needs to know." />
 
-      <Section title="Free time this week" qualifier="best first">
+      <Section title="Free time this week" qualifier="Best first">
         {free.length ? (
           free.map((b) => (
             <Press
@@ -84,19 +85,18 @@ export default function Life() {
 
       <Section
         title="Fixed commitments"
-        qualifier={anchors.length ? String(anchors.length) : undefined}
+        count={anchors.length || undefined}
         action={
-          <Press onPress={() => setEdit({ id: `a-${Date.now()}`, title: '', days: [1, 2, 3, 4, 5], start: '15:00', end: '15:30', priority: 'must', color: COLORS[anchors.length % COLORS.length] })} hitSlop={10} style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-            <Plus size={15} color={c.ink2} />
-            <Txt size={13.5} tone="ink2">
-              Add
-            </Txt>
-          </Press>
+          <Button
+            label="Add"
+            kind="line"
+            icon={Plus}
+            style={{ minHeight: 32, paddingHorizontal: 10 }}
+            onPress={() => setEdit({ id: `a-${Date.now()}`, title: '', days: [1, 2, 3, 4, 5], start: '15:00', end: '15:30', priority: 'must', color: COLORS[anchors.length % COLORS.length] })}
+          />
         }
+        qualifier="Must-dos come before sleep"
       >
-        <Txt size={13} tone="muted" style={{ marginBottom: 8 }}>
-          School runs, pet walks, classes. Must-do ones are planned before sleep; flexible ones fit where they can.
-        </Txt>
         {anchors.length ? (
           anchors.map((a) => (
             <Press key={a.id} onPress={() => setEdit(a)} sink={0.98} style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 11, borderBottomWidth: 1, borderBottomColor: c.line }}>
@@ -105,7 +105,7 @@ export default function Life() {
                   {a.title}
                 </Txt>
                 <Txt num size={12.5} tone="muted">
-                  {daysText(a.days)} · {a.start} to {a.end}
+                  {daysText(a.days)}, {a.start} to {a.end}
                 </Txt>
               </View>
               {a.priority === 'must' ? <Lock size={14} color={c.muted} /> : <Txt size={12} tone="muted">If it fits</Txt>}
@@ -116,10 +116,12 @@ export default function Life() {
         )}
       </Section>
 
-      <Section title="Share with home" qualifier="family link">
+      <Section title="Share with home" qualifier="Family link" bare>
         <Card>
-          <Label style={{ marginBottom: 10 }}>What they’ll see</Label>
-          <View style={{ backgroundColor: c.sunken, borderRadius: 12, padding: 14, borderWidth: 1, borderColor: c.line }}>
+          <Txt size={14} weight={500} style={{ marginBottom: 10 }}>
+            What they’ll see
+          </Txt>
+          <View style={{ backgroundColor: c.frame, borderRadius: radius.panel, padding: 14, borderWidth: 1, borderColor: c.line }}>
             <Txt size={13} tone="muted">
               {profile.name || 'You'} right now
             </Txt>
@@ -135,7 +137,7 @@ export default function Life() {
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 14 }}>
             <Button label="Create a link" icon={Share2} disabled />
-            <Pill label="Needs sign-in · coming soon" tone="accent" />
+            <Pill label="Coming soon" tone="accent" />
           </View>
         </Card>
       </Section>
@@ -212,9 +214,9 @@ function AnchorSheet({ anchor, onClose }: { anchor: Anchor | null; onClose: () =
               onPress={() => set({ days: on ? a.days.filter((x) => x !== d) : [...a.days, d] })}
               accessibilityRole="checkbox"
               accessibilityState={{ checked: on }}
-              style={{ flex: 1, height: 40, borderRadius: 20, borderWidth: 1, borderColor: on ? c.ink : c.line, backgroundColor: on ? c.ink : 'transparent', alignItems: 'center', justifyContent: 'center' }}
+              style={{ flex: 1, height: 38, borderRadius: 8, borderWidth: 1, borderColor: on ? c.accent : c.lineStrong, backgroundColor: on ? c.accent : c.raised, alignItems: 'center', justifyContent: 'center' }}
             >
-              <Txt size={14} weight={600} color={on ? c.onInk : c.ink2}>
+              <Txt size={14} weight={500} color={on ? c.onInk : c.ink}>
                 {DAYS[d]}
               </Txt>
             </Press>
@@ -241,8 +243,8 @@ function AnchorSheet({ anchor, onClose }: { anchor: Anchor | null; onClose: () =
       <Label style={{ marginBottom: 8 }}>Colour</Label>
       <View style={{ flexDirection: 'row', gap: 10 }}>
         {COLORS.map((col) => (
-          <Press key={col} onPress={() => set({ color: col })} accessibilityLabel={`Colour ${col}`} style={{ width: 30, height: 30, borderRadius: 15, backgroundColor: col, borderWidth: 2, borderColor: a.color === col ? c.ink : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
-            {a.color === col ? <Check size={14} color="#fff" strokeWidth={3} /> : null}
+          <Press key={col} onPress={() => set({ color: col })} accessibilityLabel={`Colour ${col}`} style={{ width: 34, height: 34, borderRadius: 8, backgroundColor: col, borderWidth: 2, borderColor: a.color === col ? c.ink : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
+            {a.color === col ? <Check size={15} color={inkOn(col)} strokeWidth={3} /> : null}
           </Press>
         ))}
       </View>

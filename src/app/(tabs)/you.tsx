@@ -115,7 +115,7 @@ export default function You() {
         </View>
       </Section>
 
-      <Section title="Reminders" qualifier="all on this phone">
+      <Section title="Reminders" qualifier="All on this phone">
         <Row label="Leave for work" hint="Commute plus a buffer">
           <Switch label="Leave for work" on={reminders.leave} onChange={(leave) => setReminders({ leave })} />
         </Row>

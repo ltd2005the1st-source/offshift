@@ -20,7 +20,7 @@ const NATIVE_TEXT: Record<Weight, string> = {
   600: 'IBMPlexSans_600SemiBold',
   700: 'IBMPlexSans_700Bold',
 };
-const NATIVE_DISPLAY = 'SpaceGrotesk_600SemiBold';
+const NATIVE_DISPLAY = 'InterTight_600SemiBold';
 
 export function fontFor(weight: Weight, role: 'text' | 'display' = 'text') {
   if (Platform.OS === 'web') {

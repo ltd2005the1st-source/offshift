@@ -4,7 +4,7 @@ import { Animated, Platform, View } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
 import type { LucideIcon } from 'lucide-react-native';
 import { EASE, sec, useTheme } from '../theme/theme';
-import { inkOn, radius } from '../theme/tokens';
+import { inkOn, lift, radius } from '../theme/tokens';
 import { Press } from './Press';
 import { Label, Txt } from './Text';
 
@@ -36,21 +36,25 @@ export function Button({
   style?: StyleProp<ViewStyle>;
   accessibilityLabel?: string;
 }) {
-  const { c } = useTheme();
-  const fg = kind === 'primary' ? c.onInk : danger ? c.pen : kind === 'ghost' || kind === 'quiet' ? c.ink2 : c.ink;
+  const { c, name } = useTheme();
+  // coss variants: default (primary), outline (line), ghost, secondary (quiet), destructive
+  const solid = kind === 'primary';
+  const bg = solid ? (danger ? c.pen : c.accent) : kind === 'line' ? c.raised : kind === 'quiet' ? c.hover : 'transparent';
+  const fg = solid ? (danger ? '#FFFFFF' : c.onInk) : danger ? c.pen : c.ink;
   const box: ViewStyle = {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 7,
-    minHeight: big ? 52 : 40,
-    paddingHorizontal: big ? 18 : 13,
+    gap: 8,
+    minHeight: big ? 48 : 40,
+    paddingHorizontal: big ? 18 : 14,
     borderRadius: big ? radius.big : radius.button,
-    backgroundColor: kind === 'primary' ? c.ink : kind === 'quiet' ? c.hover : 'transparent',
-    borderWidth: kind === 'line' ? 1 : 0,
-    borderColor: c.lineStrong,
+    backgroundColor: bg,
+    borderWidth: 1,
+    borderColor: solid ? bg : kind === 'line' ? c.lineStrong : 'transparent',
     alignSelf: full ? 'stretch' : 'flex-start',
-    opacity: disabled ? 0.4 : 1,
+    opacity: disabled ? 0.64 : 1,
+    ...(solid || kind === 'line' ? lift(name) : {}),
   };
   return (
     <Press
@@ -61,8 +65,8 @@ export function Button({
       haptic
       style={[box, style]}
     >
-      {Icon ? <Icon size={big ? 18 : 16} color={fg} strokeWidth={1.9} /> : null}
-      <Txt size={big ? 16 : 14} weight={500} color={fg}>
+      {Icon ? <Icon size={big ? 18 : 16} color={fg} strokeWidth={2} style={{ opacity: 0.8 }} /> : null}
+      <Txt size={big ? 16 : 14.5} weight={500} color={fg}>
         {label}
       </Txt>
     </Press>
@@ -77,9 +81,9 @@ export function IconButton({ icon: Icon, onPress, label, filled }: { icon: Lucid
       accessibilityLabel={label}
       onPress={onPress}
       hitSlop={6}
-      style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: filled ? c.hover : 'transparent' }}
+      style={{ width: 38, height: 38, borderRadius: radius.button, alignItems: 'center', justifyContent: 'center', backgroundColor: filled ? c.hover : 'transparent', borderWidth: 1, borderColor: filled ? 'transparent' : c.lineStrong }}
     >
-      <Icon size={19} color={c.ink2} strokeWidth={1.8} />
+      <Icon size={18} color={c.ink} strokeWidth={1.9} />
     </Press>
   );
 }
@@ -88,8 +92,8 @@ export function IconButton({ icon: Icon, onPress, label, filled }: { icon: Lucid
 export function LinkAction({ label, onPress }: { label: string; onPress?: () => void }) {
   return (
     <Press onPress={onPress} hitSlop={10} sink={0.98} accessibilityRole="link">
-      <Txt size={13} tone="muted">
-        {label} →
+      <Txt size={13.5} weight={500} tone="ink" style={{ textDecorationLine: 'underline', textDecorationColor: '#8888' } as never}>
+        {label}
       </Txt>
     </Press>
   );
@@ -98,15 +102,14 @@ export function LinkAction({ label, onPress }: { label: string; onPress?: () => 
 // ── Surfaces ───────────────────────────────────────────────────────────────
 export function Card({ children, style, pad = 16, onPress, accessibilityLabel }: { children: ReactNode; style?: StyleProp<ViewStyle>; pad?: number; onPress?: () => void; accessibilityLabel?: string }) {
   const { c, name } = useTheme();
+  // coss Card: rounded-2xl, hairline border, card fill, faint lift.
   const box: ViewStyle = {
     backgroundColor: c.surface,
     borderRadius: radius.card,
     borderWidth: 1,
-    borderColor: name === 'night' ? c.hairline : c.line,
+    borderColor: c.line,
     padding: pad,
-    ...(name === 'day'
-      ? { shadowColor: '#0f0f0a', shadowOpacity: 0.06, shadowRadius: 8, shadowOffset: { width: 0, height: 2 } }
-      : {}),
+    ...lift(name),
   };
   if (onPress)
     return (
@@ -117,34 +120,80 @@ export function Card({ children, style, pad = 16, onPress, accessibilityLabel }:
   return <View style={[box, style]}>{children}</View>;
 }
 
-/** Small grey title over a hairline, quiet action on the right. */
-export function Section({ title, qualifier, action, children, style }: { title: string; qualifier?: string; action?: ReactNode; children?: ReactNode; style?: StyleProp<ViewStyle> }) {
-  const { c } = useTheme();
+/**
+ * coss CardFrame: a soft muted frame with a header (title, optional count or
+ * description, optional action) around a card panel that holds the content.
+ * `bare` drops the inner panel for content that brings its own cards.
+ */
+export function Section({
+  title,
+  qualifier,
+  count,
+  action,
+  children,
+  style,
+  bare,
+  flush,
+}: {
+  title: string;
+  qualifier?: string;
+  count?: number | string;
+  action?: ReactNode;
+  children?: ReactNode;
+  style?: StyleProp<ViewStyle>;
+  bare?: boolean;
+  /** No side padding inside the panel (for edge-to-edge content). */
+  flush?: boolean;
+}) {
+  const { c, name } = useTheme();
   return (
-    <View style={[{ marginBottom: 28 }, style]}>
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          borderBottomWidth: 1,
-          borderBottomColor: c.line,
-          paddingBottom: 7,
-          marginBottom: 12,
-        }}
-      >
-        <Txt size={13.5} weight={600} tone="ink2">
-          {title}
+    <View style={[{ marginBottom: 20, backgroundColor: c.frame, borderRadius: radius.card, padding: 4 }, style]}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 12, paddingTop: 9, paddingBottom: 10 }}>
+        <View style={{ flex: 1, minWidth: 0 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <Txt size={14} weight={600}>
+              {title}
+            </Txt>
+            {count !== undefined ? <Count value={count} /> : null}
+          </View>
           {qualifier ? (
-            <Txt size={13.5} tone="muted">
-              {'  ·  '}
+            <Txt size={13} tone="muted" style={{ marginTop: 1 }}>
               {qualifier}
             </Txt>
           ) : null}
-        </Txt>
+        </View>
         {action}
       </View>
-      {children}
+      {bare ? (
+        <View style={{ gap: 4 }}>{children}</View>
+      ) : (
+        <View
+          style={{
+            backgroundColor: c.bg,
+            borderRadius: radius.panel,
+            borderWidth: 1,
+            borderColor: c.line,
+            paddingHorizontal: flush ? 0 : 14,
+            overflow: 'hidden',
+            ...lift(name),
+          }}
+        >
+          {/* rows draw a bottom rule; the last one is clipped by the panel edge */}
+          <View style={{ marginBottom: -1 }}>{children}</View>
+        </View>
+      )}
+    </View>
+  );
+}
+
+/** coss Badge, secondary, for counts beside a title. */
+export function Count({ value }: { value: number | string }) {
+  const { c } = useTheme();
+  return (
+    <View style={{ minWidth: 20, height: 20, paddingHorizontal: 6, borderRadius: radius.badge, backgroundColor: c.hover, alignItems: 'center', justifyContent: 'center' }}>
+      <Txt num size={12} weight={500} tone="ink2" lh={16}>
+        {String(value)}
+      </Txt>
     </View>
   );
 }
@@ -154,14 +203,14 @@ export function PageHeader({ title, right, sub }: { title: string; right?: React
     <View style={{ marginBottom: 22 }}>
       <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', gap: 12 }}>
         <View style={{ flex: 1, minWidth: 0 }}>
-          <Txt size={32} weight={600} title>
+          <Txt size={30} weight={600} title>
             {title}
           </Txt>
         </View>
         {right}
       </View>
       {sub ? (
-        <Txt size={15} tone="ink2" style={{ marginTop: 8 }}>
+        <Txt size={15} tone="muted" style={{ marginTop: 6 }}>
           {sub}
         </Txt>
       ) : null}
@@ -181,9 +230,9 @@ export function Segmented<T extends string | number>({
   onChange: (v: T) => void;
   full?: boolean;
 }) {
-  const { c } = useTheme();
+  const { c, name } = useTheme();
   return (
-    <View style={{ flexDirection: 'row', backgroundColor: c.hover, borderRadius: 10, padding: 3, alignSelf: full ? 'stretch' : 'flex-start' }} accessibilityRole="tablist">
+    <View style={{ flexDirection: 'row', backgroundColor: c.hover, borderRadius: radius.button, padding: 2, gap: 2, alignSelf: full ? 'stretch' : 'flex-start' }} accessibilityRole="tablist">
       {options.map((o) => {
         const on = o.value === value;
         return (
@@ -197,14 +246,14 @@ export function Segmented<T extends string | number>({
               flex: full ? 1 : undefined,
               minHeight: 34,
               paddingHorizontal: 12,
-              borderRadius: 7,
+              borderRadius: 8,
               alignItems: 'center',
               justifyContent: 'center',
-              backgroundColor: on ? c.raised : 'transparent',
-              ...(on ? { shadowColor: '#000', shadowOpacity: 0.18, shadowRadius: 3, shadowOffset: { width: 0, height: 1 } } : {}),
+              backgroundColor: on ? (name === 'night' ? c.lineStrong : c.bg) : 'transparent',
+              ...(on ? { shadowColor: '#000', shadowOpacity: name === 'night' ? 0 : 0.08, shadowRadius: 2, shadowOffset: { width: 0, height: 1 } } : {}),
             }}
           >
-            <Txt size={13.5} weight={on ? 600 : 400} tone={on ? 'ink' : 'muted'}>
+            <Txt size={14} weight={500} tone={on ? 'ink' : 'muted'}>
               {o.label}
             </Txt>
           </Press>
@@ -226,16 +275,16 @@ export function Chip({ label, on, onPress, color, icon: Icon }: { label: string;
         flexDirection: 'row',
         alignItems: 'center',
         gap: 6,
-        minHeight: 36,
-        paddingHorizontal: 13,
-        borderRadius: 18,
+        minHeight: 34,
+        paddingHorizontal: 12,
+        borderRadius: radius.button,
         borderWidth: 1,
-        borderColor: on ? c.ink : c.line,
-        backgroundColor: on ? c.ink : 'transparent',
+        borderColor: on ? c.accent : c.lineStrong,
+        backgroundColor: on ? c.accent : c.raised,
       }}
     >
-      {Icon ? <Icon size={15} color={on ? c.onInk : c.ink2} strokeWidth={1.8} /> : null}
-      <Txt size={13.5} color={on ? c.onInk : c.ink2} weight={on ? 500 : 400}>
+      {Icon ? <Icon size={15} color={on ? c.onInk : c.ink} strokeWidth={1.9} style={{ opacity: 0.8 }} /> : null}
+      <Txt size={14} color={on ? c.onInk : c.ink} weight={500}>
         {label}
       </Txt>
     </Press>
@@ -253,16 +302,16 @@ export function Switch({ on, onChange, label }: { on: boolean; onChange: (v: boo
     Animated.timing(x, { toValue: on ? 1 : 0, duration: sec(0.25), easing: EASE, useNativeDriver: false }).start();
   }, [on, x]);
   const bg = x.interpolate({ inputRange: [0, 1], outputRange: [c.lineStrong, c.accent] });
-  const tx = x.interpolate({ inputRange: [0, 1], outputRange: [0, 18] });
+  const tx = x.interpolate({ inputRange: [0, 1], outputRange: [0, 16] });
   return (
     <Press onPress={() => onChange(!on)} haptic accessibilityRole="switch" accessibilityLabel={label} accessibilityState={{ checked: on }} hitSlop={8}>
-      <Animated.View style={{ width: 46, height: 28, borderRadius: 14, backgroundColor: bg, padding: 3 }}>
+      <Animated.View style={{ width: 38, height: 22, borderRadius: 11, backgroundColor: bg, padding: 1 }}>
         <Animated.View
           style={{
-            width: 22,
-            height: 22,
-            borderRadius: 11,
-            backgroundColor: '#fff',
+            width: 20,
+            height: 20,
+            borderRadius: 10,
+            backgroundColor: on ? c.onInk : c.bg,
             transform: [{ translateX: tx }],
             shadowColor: '#000',
             shadowOpacity: 0.2,
@@ -283,15 +332,15 @@ export function Stepper({ value, onChange, step = 1, min = 0, max = 999, format 
       haptic
       accessibilityRole="button"
       accessibilityLabel={delta > 0 ? 'Increase' : 'Decrease'}
-      style={{ width: 44, height: 40, alignItems: 'center', justifyContent: 'center' }}
+      style={{ width: 40, height: 38, alignItems: 'center', justifyContent: 'center' }}
     >
-      <Txt size={18} tone="ink2">
+      <Txt size={18} tone="muted">
         {label}
       </Txt>
     </Press>
   );
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: c.line, borderRadius: radius.button }}>
+    <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: c.lineStrong, borderRadius: radius.button, backgroundColor: c.raised }}>
       {btn('−', -step)}
       <Txt num weight={600} size={15} style={{ minWidth: 64, textAlign: 'center' }}>
         {format ? format(value) : String(value)}
@@ -307,7 +356,9 @@ export function Row({ label, hint, children, onPress, last }: { label: string; h
   const body = (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 12, borderBottomWidth: last ? 0 : 1, borderBottomColor: c.line }}>
       <View style={{ flex: 1, minWidth: 0 }}>
-        <Txt size={15}>{label}</Txt>
+        <Txt size={15} weight={500}>
+          {label}
+        </Txt>
         {hint ? (
           <Txt size={12.5} tone="muted" style={{ marginTop: 2 }}>
             {hint}
@@ -345,15 +396,14 @@ export function Bar({ value, color, height = 6 }: { value: number; color?: strin
   }, [value, w]);
   return (
     <View style={{ height, borderRadius: height / 2, backgroundColor: c.hover, overflow: 'hidden' }}>
-      <Animated.View style={{ height, borderRadius: height / 2, backgroundColor: color ?? c.accent, width: w.interpolate({ inputRange: [0, 1], outputRange: ['0%', '100%'] }) }} />
+      <Animated.View style={{ height, borderRadius: height / 2, backgroundColor: color ?? c.ink, width: w.interpolate({ inputRange: [0, 1], outputRange: ['0%', '100%'] }) }} />
     </View>
   );
 }
 
 export function Empty({ text }: { text: string }) {
-  const { c } = useTheme();
   return (
-    <View style={{ borderWidth: 1, borderStyle: 'dashed', borderColor: c.lineStrong, borderRadius: radius.strip, paddingVertical: 22, paddingHorizontal: 16 }}>
+    <View style={{ paddingVertical: 26, paddingHorizontal: 16 }}>
       <Txt size={14} tone="muted" center>
         {text}
       </Txt>
@@ -361,12 +411,12 @@ export function Empty({ text }: { text: string }) {
   );
 }
 
-export function Pill({ label, tone = 'pen' }: { label: string; tone?: 'pen' | 'amber' | 'accent' | 'good' }) {
+export function Pill({ label, tone = 'pen' }: { label: string; tone?: 'pen' | 'amber' | 'accent' | 'good' | 'info' }) {
   const { c } = useTheme();
   const bg = c[tone];
   return (
-    <View style={{ backgroundColor: bg, borderRadius: 4, paddingHorizontal: 7, paddingVertical: 2, alignSelf: 'flex-start' }}>
-      <Txt size={11} weight={700} color={inkOn(bg)} lh={15}>
+    <View style={{ backgroundColor: bg, borderRadius: radius.badge, paddingHorizontal: 6, height: 20, justifyContent: 'center', alignSelf: 'flex-start' }}>
+      <Txt size={12} weight={600} color={inkOn(bg)} lh={16}>
         {label}
       </Txt>
     </View>

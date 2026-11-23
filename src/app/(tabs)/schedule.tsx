@@ -71,11 +71,11 @@ export default function Schedule() {
               <Txt num size={14.5} weight={600}>
                 {monthShifts.length}
               </Txt>{' '}
-              shifts ·{' '}
+              shifts,{' '}
               <Txt num size={14.5} weight={600}>
                 {Math.round(hours)}
               </Txt>{' '}
-              hours ·{' '}
+              hours,{' '}
               <Txt num size={14.5} weight={600}>
                 {nights}
               </Txt>{' '}
@@ -114,8 +114,8 @@ export default function Schedule() {
                     accessibilityLabel={`${d}${p ? `, ${p.label}` : ''}`}
                     style={{ flex: 1, height: 62, backgroundColor: on ? c.accentSoft : out ? c.sunken : c.surface, padding: 5, alignItems: 'center', gap: 5 }}
                   >
-                    <View style={{ width: 24, height: 24, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: isToday ? c.pen : on ? c.accent : 'transparent' }}>
-                      <Txt num size={13} weight={isToday || on ? 700 : 500} color={isToday || on ? '#fff' : out ? c.muted : c.ink}>
+                    <View style={{ minWidth: 24, height: 22, paddingHorizontal: 3, borderRadius: 6, alignItems: 'center', justifyContent: 'center', backgroundColor: on ? c.accent : isToday ? c.pen : 'transparent' }}>
+                      <Txt num size={13} weight={isToday || on ? 700 : 500} color={on ? c.onInk : isToday ? '#fff' : out ? c.muted : c.ink}>
                         {Number(d.slice(8))}
                       </Txt>
                     </View>
@@ -142,7 +142,7 @@ export default function Schedule() {
           </View>
         </Section>
 
-        <Section title="Your shifts" qualifier={String(presets.length)}>
+        <Section title="Your shifts" count={presets.length}>
           {presets.map((p) => (
             <View key={p.id} style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 11, borderBottomWidth: 1, borderBottomColor: c.line }}>
               <View style={{ width: 32, height: 26, borderRadius: 4, backgroundColor: p.color, alignItems: 'center', justifyContent: 'center' }}>
@@ -192,7 +192,7 @@ export default function Schedule() {
           </View>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
             {presets.map((p) => (
-              <Chip key={p.id} label={`${p.code} · ${p.start.replace(':00', '')} to ${p.end.replace(':00', '')}`} color={p.color} onPress={() => apply(p.id)} />
+              <Chip key={p.id} label={`${p.code}  ${p.start.replace(':00', '')} to ${p.end.replace(':00', '')}`} color={p.color} onPress={() => apply(p.id)} />
             ))}
             <Chip label="Day off" onPress={() => apply(null)} />
           </View>
@@ -210,9 +210,6 @@ function ImportSheet({ open, onClose }: { open: boolean; onClose: () => void }) 
   const toast = useToast();
   const opt = (Icon: LucideIcon, title: string, body: string, tag?: string, onPress?: () => void) => (
     <Press onPress={onPress} disabled={!onPress} sink={0.98} style={{ flexDirection: 'row', gap: 14, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: c.line, opacity: onPress ? 1 : 0.75 }}>
-      <View style={{ width: 40, height: 40, borderRadius: 10, backgroundColor: c.hover, alignItems: 'center', justifyContent: 'center' }}>
-        <Icon size={19} color={c.ink2} />
-      </View>
       <View style={{ flex: 1 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
           <Txt size={15.5} weight={500}>
@@ -228,10 +225,10 @@ function ImportSheet({ open, onClose }: { open: boolean; onClose: () => void }) 
   );
   return (
     <Sheet open={open} onClose={onClose} title="Add your schedule">
-      {opt(Camera, 'Screenshot of your roster', 'Snap the unit schedule. You check every day before anything saves, and the photo is deleted after.', 'Coming soon')}
-      {opt(Link2, 'Calendar feed', 'Paste an ICS link from your hospital or another app. It refreshes daily.', 'Coming soon')}
-      {opt(Repeat, 'A repeating rotation', 'Pick a cycle like 2-2-3 or 4 on, 4 off and a start date.', 'Coming soon')}
-      {opt(CalendarPlus, 'Use a sample fortnight', 'Fill the calendar with a realistic rotating schedule to see how plans look.', undefined, () => {
+      {opt(Camera, 'Screenshot of your roster', 'Snap it, check it, save', 'Coming soon')}
+      {opt(Link2, 'Calendar feed', 'Paste an ICS link', 'Coming soon')}
+      {opt(Repeat, 'A repeating rotation', 'Pick a cycle and start date', 'Coming soon')}
+      {opt(CalendarPlus, 'Use a sample fortnight', 'See how plans look', undefined, () => {
         loadSample();
         toast.show('Sample fortnight added. Plan updated.');
         onClose();

@@ -33,7 +33,7 @@ export function FlipCard({ t, today }: { t: Transition; today: string }) {
         return (
           <View key={i}>
             {dayChange || i === 0 ? (
-              <Txt size={11} weight={600} tone="muted" style={{ letterSpacing: 0.7, textTransform: 'uppercase', marginTop: i ? 8 : 0, marginBottom: 2 }}>
+              <Txt size={13} weight={600} tone="ink2" style={{ marginTop: i ? 10 : 0, marginBottom: 2 }}>
                 {relDay(toISODate(s.at), today)}
               </Txt>
             ) : null}

@@ -10,7 +10,7 @@ import { Txt } from './Text';
 
 const native = Platform.OS !== 'web';
 
-/** Bottom sheet. Enters with Daybook's sheet motion: rise + fade on the one curve. */
+/** coss Drawer (bottom): popover fill, drag bar, muted footer. Rises on the one curve. */
 export function Sheet({ open, onClose, title, children, footer }: { open: boolean; onClose: () => void; title?: string; children: ReactNode; footer?: ReactNode }) {
   const { c, name } = useTheme();
   const insets = useSafeAreaInsets();
@@ -42,13 +42,13 @@ export function Sheet({ open, onClose, title, children, footer }: { open: boolea
             borderTopRightRadius: radius.sheet,
             borderWidth: 1,
             borderBottomWidth: 0,
-            borderColor: name === 'night' ? c.hairline : c.line,
+            borderColor: c.line,
             opacity: v,
             transform: [{ translateY: v.interpolate({ inputRange: [0, 1], outputRange: [36, 0] }) }],
           }}
         >
           <View style={{ alignItems: 'center', paddingTop: 8 }}>
-            <View style={{ width: 36, height: 5, borderRadius: 3, backgroundColor: c.lineStrong }} />
+            <View style={{ width: 48, height: 4, borderRadius: 2, backgroundColor: c.lineStrong }} />
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 10, paddingBottom: 6 }}>
             <Txt size={20} weight={600} display style={{ flex: 1 }}>
@@ -58,16 +58,16 @@ export function Sheet({ open, onClose, title, children, footer }: { open: boolea
               onPress={onClose}
               accessibilityRole="button"
               accessibilityLabel="Close"
-              style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: c.hover, alignItems: 'center', justifyContent: 'center' }}
+              style={{ width: 32, height: 32, borderRadius: radius.button, alignItems: 'center', justifyContent: 'center' }}
             >
-              <X size={17} color={c.ink2} />
+              <X size={18} color={c.muted} />
             </Press>
           </View>
           <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: footer ? 12 : 20 + insets.bottom }} bounces={false}>
             {children}
           </ScrollView>
           {footer ? (
-            <View style={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: 14 + insets.bottom, borderTopWidth: 1, borderTopColor: c.line }}>{footer}</View>
+            <View style={{ paddingHorizontal: 20, paddingTop: 14, paddingBottom: 14 + insets.bottom, borderTopWidth: 1, borderTopColor: c.line, backgroundColor: c.frame }}>{footer}</View>
           ) : null}
         </Animated.View>
       </View>
@@ -118,8 +118,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             transform: [{ translateY: v.interpolate({ inputRange: [0, 1], outputRange: [28, 0] }) }],
           }}
         >
-          <View style={{ backgroundColor: c.ink, borderRadius: 22, paddingVertical: 10, paddingHorizontal: 18, maxWidth: 340 }}>
-            <Txt size={14} color={c.onInk} center>
+          <View style={{ backgroundColor: c.raised, borderWidth: 1, borderColor: c.line, borderRadius: radius.panel, paddingVertical: 12, paddingHorizontal: 16, maxWidth: 340, shadowColor: '#000', shadowOpacity: 0.16, shadowRadius: 16, shadowOffset: { width: 0, height: 6 } }}>
+            <Txt size={14} weight={500}>
               {text}
             </Txt>
           </View>

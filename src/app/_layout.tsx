@@ -5,7 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaFrameContext, SafeAreaInsetsContext, SafeAreaProvider, initialWindowMetrics } from 'react-native-safe-area-context';
 import type { Metrics } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
-import { SpaceGrotesk_600SemiBold } from '@expo-google-fonts/space-grotesk/600SemiBold';
+import { InterTight_600SemiBold } from '@expo-google-fonts/inter-tight/600SemiBold';
 import { IBMPlexSans_400Regular } from '@expo-google-fonts/ibm-plex-sans/400Regular';
 import { IBMPlexSans_500Medium } from '@expo-google-fonts/ibm-plex-sans/500Medium';
 import { IBMPlexSans_600SemiBold } from '@expo-google-fonts/ibm-plex-sans/600SemiBold';
@@ -20,7 +20,7 @@ export default function RootLayout() {
   const [loaded] = useFonts(
     Platform.OS === 'web'
       ? {}
-      : { SpaceGrotesk_600SemiBold, IBMPlexSans_400Regular, IBMPlexSans_500Medium, IBMPlexSans_600SemiBold, IBMPlexSans_700Bold },
+      : { InterTight_600SemiBold, IBMPlexSans_400Regular, IBMPlexSans_500Medium, IBMPlexSans_600SemiBold, IBMPlexSans_700Bold },
   );
   const [hydrated, setHydrated] = useState(useStore.persist.hasHydrated());
 
@@ -32,7 +32,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (Platform.OS !== 'web') return;
-    // Space Grotesk (titles) and IBM Plex Sans (text) from Google Fonts.
+    // Inter Tight (titles) and IBM Plex Sans (text) from Google Fonts.
     const id = 'offshift-font';
     if (!document.getElementById(id)) {
       const link = document.createElement('link');

@@ -13,7 +13,7 @@ import { usePlan, useNow, useToday } from '../state/plan';
 import { useStore } from '../state/store';
 import type { Pattern } from '../state/store';
 import { EASE, sec, useTheme } from '../theme/theme';
-import { inkOn, tint } from '../theme/tokens';
+import { inkOn, lift, radius, tint } from '../theme/tokens';
 import { ClockHero } from '../ui/ClockHero';
 import { Field } from '../ui/Field';
 import { FlipCard } from '../ui/FlipCard';
@@ -151,8 +151,8 @@ function H({ title, sub }: { title: string; sub?: string }) {
   );
 }
 
-function OptionCard({ icon: Icon, title, body, on, onPress, right }: { icon?: LucideIcon; title: string; body?: string; on?: boolean; onPress?: () => void; right?: ReactNode }) {
-  const { c } = useTheme();
+function OptionCard({ title, body, on, onPress, right }: { icon?: LucideIcon; title: string; body?: string; on?: boolean; onPress?: () => void; right?: ReactNode }) {
+  const { c, name } = useTheme();
   return (
     <Press
       onPress={onPress}
@@ -164,27 +164,29 @@ function OptionCard({ icon: Icon, title, body, on, onPress, right }: { icon?: Lu
         flexDirection: 'row',
         alignItems: 'center',
         gap: 14,
-        padding: 16,
-        borderRadius: 14,
-        borderWidth: 1.5,
-        borderColor: on ? c.accent : c.line,
-        backgroundColor: on ? c.accentSoft : c.surface,
-        marginBottom: 10,
+        paddingVertical: 14,
+        paddingHorizontal: 16,
+        borderRadius: radius.panel,
+        borderWidth: 1,
+        borderColor: on ? c.accent : c.lineStrong,
+        backgroundColor: on ? c.accentSoft : c.raised,
+        marginBottom: 8,
+        ...(on ? {} : lift(name)),
       }}
     >
       <View style={{ flex: 1 }}>
-        <Txt size={16} weight={500}>
+        <Txt size={15.5} weight={500}>
           {title}
         </Txt>
         {body ? (
-          <Txt size={13.5} tone="muted" style={{ marginTop: 2 }}>
+          <Txt size={13.5} tone="muted" style={{ marginTop: 1 }}>
             {body}
           </Txt>
         ) : null}
       </View>
       {right}
-      <View style={{ width: 22, height: 22, borderRadius: 11, borderWidth: 1.5, borderColor: on ? c.accent : c.lineStrong, backgroundColor: on ? c.accent : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
-        {on ? <Check size={13} color={c.surface} strokeWidth={3} /> : null}
+      <View style={{ width: 18, height: 18, borderRadius: 5, borderWidth: 1, borderColor: on ? c.accent : c.lineStrong, backgroundColor: on ? c.accent : c.bg, alignItems: 'center', justifyContent: 'center' }}>
+        {on ? <Check size={12} color={c.onInk} strokeWidth={3} /> : null}
       </View>
     </Press>
   );
@@ -374,7 +376,7 @@ function AnchorsStep() {
       <H title="Anything your week has to work around?" sub="Tap what fits. You can set exact times in Life later." />
       {QUICK_ANCHORS.map((a) => {
         const on = anchors.some((x) => x.id === a.id);
-        return <OptionCard key={a.id} title={a.title} body={`${a.days.length === 7 ? 'Every day' : a.days.length === 5 ? 'Weekdays' : 'Some days'} · ${a.start} to ${a.end} · ${a.priority === 'must' ? 'has to happen' : 'if it fits'}`} on={on} onPress={() => (on ? remove(a.id) : upsert(a))} />;
+        return <OptionCard key={a.id} title={a.title} body={`${a.days.length === 7 ? 'Every day' : a.days.length === 5 ? 'Weekdays' : 'Some days'}, ${a.start} to ${a.end}, ${a.priority === 'must' ? 'has to happen' : 'if it fits'}`} on={on} onPress={() => (on ? remove(a.id) : upsert(a))} />;
       })}
     </View>
   );

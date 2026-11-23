@@ -78,7 +78,7 @@ export function ClockHero({ size = 260 }: { size?: number }) {
         </G>
       </Svg>
       <View style={{ position: 'absolute', inset: 0, alignItems: 'center', justifyContent: 'center' } as never} pointerEvents="none">
-        <Animated.Text style={[fontFor(500), { fontSize: 12, color: c.muted, letterSpacing: 0.8, textTransform: 'uppercase', opacity: vals[1] }]}>Then sleep</Animated.Text>
+        <Animated.Text style={[fontFor(500), { fontSize: 13, color: c.muted, opacity: vals[1] }]}>Then sleep</Animated.Text>
         <Animated.Text style={[fontFor(600, 'display'), { fontSize: 30, color: c.ink, fontVariant: ['tabular-nums'], opacity: vals[1], letterSpacing: -0.6 }]}>08:00</Animated.Text>
         <Animated.Text style={[fontFor(400), { fontSize: 12.5, color: c.ink2, opacity: vals[1] }]}>to 15:30</Animated.Text>
       </View>

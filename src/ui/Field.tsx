@@ -6,9 +6,9 @@ import { radius } from '../theme/tokens';
 import { Press } from './Press';
 import { Label, Txt } from './Text';
 
-/** Daybook's hairline field that firms up on focus. */
+/** coss Input: rounded-lg, input border, ring on focus. */
 export function Field({ label, ...rest }: { label?: string } & TextInputProps) {
-  const { c } = useTheme();
+  const { c, name } = useTheme();
   const [focus, setFocus] = useState(false);
   return (
     <View style={{ marginBottom: 14 }}>
@@ -22,13 +22,14 @@ export function Field({ label, ...rest }: { label?: string } & TextInputProps) {
           {
             fontSize: 16,
             color: c.ink,
-            minHeight: 46,
+            minHeight: 42,
             paddingHorizontal: 12,
             borderRadius: radius.button,
             borderWidth: 1,
-            borderColor: focus ? c.ink2 : c.line,
-            backgroundColor: focus ? c.surface : 'transparent',
+            borderColor: focus ? c.muted : c.lineStrong,
+            backgroundColor: name === 'night' ? c.hover : c.bg,
             outlineStyle: 'none',
+            boxShadow: focus ? `0 0 0 3px ${name === 'night' ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'}` : undefined,
           } as object,
         ]}
         {...rest}
@@ -50,7 +51,7 @@ export function TimeStepper({ value, onChange, step = 15, label }: { value: stri
   const m = clockToMins(value);
   const btn = (txt: string, d: number) => (
     <Press onPress={() => onChange(minsToClock(m + d))} haptic accessibilityLabel={`${d > 0 ? 'Later' : 'Earlier'} by ${Math.abs(d)} minutes`} style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}>
-      <Txt size={18} tone="ink2">
+      <Txt size={18} tone="muted">
         {txt}
       </Txt>
     </Press>
@@ -58,7 +59,7 @@ export function TimeStepper({ value, onChange, step = 15, label }: { value: stri
   return (
     <View style={{ flex: 1 }}>
       {label ? <Label style={{ marginBottom: 6 }}>{label}</Label> : null}
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderWidth: 1, borderColor: c.line, borderRadius: radius.button }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderWidth: 1, borderColor: c.lineStrong, borderRadius: radius.button, backgroundColor: c.raised }}>
         {btn('−', -step)}
         <Txt num size={18} weight={600}>
           {value}

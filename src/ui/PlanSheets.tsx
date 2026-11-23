@@ -50,7 +50,7 @@ export function BlockSheet({ block, onClose }: { block: PlanBlock | null; onClos
       {b ? (
         <View style={{ paddingTop: 2 }}>
           <Txt num size={15} tone="ink2">
-            {range(b.start, b.end)} · {dur(b.end - b.start)}
+            {range(b.start, b.end)}, {dur(b.end - b.start)}
           </Txt>
           <Txt size={17} weight={500} style={{ marginTop: 14 }}>
             {b.action}

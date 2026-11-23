@@ -210,7 +210,7 @@ function BlockView({ b, top, bottom, onPress, workColor, half }: { b: PlanBlock;
         {!compact ? (
           <Txt num size={12} color={look.sub} numberOfLines={1} style={{ marginTop: 1 }}>
             {clockOf(b.start)} to {clockOf(b.end)}
-            {b.kind === 'work' ? '' : `  ·  ${durShort(b.end - b.start)}`}
+            {b.kind === 'work' ? '' : `, ${durShort(b.end - b.start)}`}
           </Txt>
         ) : null}
         {roomy && b.kind !== 'free' && b.kind !== 'work' ? (

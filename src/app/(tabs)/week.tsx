@@ -64,7 +64,7 @@ export default function Week() {
         <Legend />
       </Rise>
 
-      <Section title="Changes coming up" qualifier={transitions.length ? String(transitions.length) : undefined} style={{ marginTop: 28 }}>
+      <Section title="Changes coming up" count={transitions.length || undefined} style={{ marginTop: 24 }} bare={!!transitions.length}>
         {transitions.length ? transitions.map((t) => <FlipCard key={t.date + t.kind} t={t} today={today} />) : <Empty text="No flips this week. Same rhythm all the way through." />}
       </Section>
 

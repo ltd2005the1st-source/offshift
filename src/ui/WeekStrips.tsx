@@ -54,7 +54,7 @@ export function WeekStrips({
               <Txt size={10.5} weight={600} tone={isToday ? 'pen' : 'muted'} lh={13} style={{ letterSpacing: 0.5, textTransform: 'uppercase' }}>
                 {weekdayShort(d).slice(0, 2)}
               </Txt>
-              <View style={{ width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: isToday ? c.pen : 'transparent' }}>
+              <View style={{ width: 30, height: 28, borderRadius: 8, alignItems: 'center', justifyContent: 'center', backgroundColor: isToday ? c.pen : 'transparent' }}>
                 <Txt num size={15} weight={isToday ? 700 : 500} color={isToday ? '#fff' : c.ink}>
                   {dayNum(d)}
                 </Txt>

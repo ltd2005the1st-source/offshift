@@ -30,7 +30,7 @@ function TabBar({ state, navigateToTab }: BottomTabBarProps) {
         paddingTop: 8,
         backgroundColor: c.material,
         borderTopWidth: 1,
-        borderTopColor: name === 'night' ? c.hairline : c.line,
+        borderTopColor: c.line,
         flexDirection: 'row',
         ...(Platform.OS === 'web' ? ({ backdropFilter: 'blur(24px) saturate(180%)' } as object) : {}),
       }}
@@ -55,9 +55,9 @@ function TabBar({ state, navigateToTab }: BottomTabBarProps) {
           >
             <View
               style={{
-                width: 52,
+                width: 48,
                 height: 30,
-                borderRadius: 15,
+                borderRadius: 8,
                 alignItems: 'center',
                 justifyContent: 'center',
                 backgroundColor: focused ? c.accentSoft : 'transparent',

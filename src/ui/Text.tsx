@@ -40,10 +40,10 @@ export function Txt({ size = 15, weight = 400, tone = 'ink', color, num, display
   return <Text allowFontScaling maxFontSizeMultiplier={1.6} style={[s, style]} {...rest} />;
 }
 
-/** 11px, 600, .07em, uppercase, muted, Daybook's eyebrow. */
-export function Label({ children, tone = 'muted', style, ...rest }: TxtProps) {
+/** coss Label: 14px medium, sentence case. Used for field labels. */
+export function Label({ children, tone = 'ink', style, ...rest }: TxtProps) {
   return (
-    <Txt size={11} weight={600} tone={tone} lh={14} style={[{ letterSpacing: 11 * 0.07, textTransform: 'uppercase' }, style]} {...rest}>
+    <Txt size={14} weight={500} tone={tone} lh={20} style={style} {...rest}>
       {children}
     </Txt>
   );

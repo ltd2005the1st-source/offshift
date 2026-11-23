@@ -9,7 +9,8 @@ import { useStore } from '../../state/store';
 import { useTheme } from '../../theme/theme';
 import { lookFor, shiftColor } from '../../ui/blockStyle';
 import { dayNum, dayTitle, dur, greeting, longDate, range, relDay, weekdayShort } from '../../ui/format';
-import { Bar, Card, Chip, LinkAction, Rise, Section } from '../../ui/kit';
+import { Bar, Card, Chip, LinkAction, Pill, Rise, Section } from '../../ui/kit';
+import { lift, radius } from '../../theme/tokens';
 import { BlockSheet, MarkerSheet } from '../../ui/PlanSheets';
 import { Press } from '../../ui/Press';
 import { Screen } from '../../ui/Screen';
@@ -18,7 +19,7 @@ import { Label, Txt } from '../../ui/Text';
 import { Timeline } from '../../ui/Timeline';
 
 export default function Today() {
-  const { c } = useTheme();
+  const { c, name } = useTheme();
   const now = useNow();
   const today = useToday();
   const params = useLocalSearchParams<{ date?: string }>();
@@ -78,7 +79,8 @@ export default function Today() {
                 gap: 3,
                 backgroundColor: on ? c.surface : 'transparent',
                 borderWidth: 1,
-                borderColor: on ? c.hairline : 'transparent',
+                borderColor: on ? c.lineStrong : 'transparent',
+                ...(on ? lift(name) : {}),
               }}
             >
               <Txt size={10.5} weight={600} tone={d === today ? 'pen' : 'muted'} lh={13} style={{ letterSpacing: 0.5, textTransform: 'uppercase' }}>
@@ -112,14 +114,14 @@ export default function Today() {
             onPress={() => router.navigate('/week')}
             sink={0.98}
             accessibilityRole="button"
-            style={{ marginTop: 18, flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: c.amberSoft, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12 }}
+            style={{ marginTop: 18, flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: c.amberSoft, borderWidth: 1, borderColor: c.amberSoft, borderRadius: radius.panel, paddingHorizontal: 14, paddingVertical: 12 }}
           >
             <ArrowRightLeft size={17} color={c.amber} />
             <View style={{ flex: 1 }}>
               <Txt size={14.5} weight={600}>
                 {transition.title}
                 <Txt size={14.5} tone="muted">
-                  {'  ·  '}
+                  {'  '}
                   {relDay(transition.date, today)}
                 </Txt>
               </Txt>
@@ -184,8 +186,10 @@ export default function Today() {
         <Stat value={dur(freeOn(plan, date, isToday ? now : undefined))} label={isToday ? 'Free, rest of today' : 'Free time'} />
       </View>
 
-      <Section title={isToday ? 'Next 24 hours' : 'The day'} qualifier={nextSleep && isToday ? `sleep ${range(nextSleep.start, nextSleep.end)}` : undefined} action={<LinkAction label="Week" onPress={() => router.navigate('/week')} />}>
-        <Timeline plan={plan} start={tStart} end={tEnd} now={now} onBlock={setBlock} onMarker={setMarker} />
+      <Section title={isToday ? 'Next 24 hours' : 'The day'} qualifier={nextSleep && isToday ? `Sleep ${range(nextSleep.start, nextSleep.end)}` : undefined} flush action={<LinkAction label="Week" onPress={() => router.navigate('/week')} />}>
+        <View style={{ paddingVertical: 14, paddingRight: 4 }}>
+          <Timeline plan={plan} start={tStart} end={tEnd} now={now} onBlock={setBlock} onMarker={setMarker} />
+        </View>
       </Section>
 
       <Txt size={12} tone="muted" center style={{ marginTop: 4 }}>
@@ -206,20 +210,14 @@ function NowCard({ b, now, onPress, workColor }: { b: PlanBlock; now: number; on
   const asleep = b.kind === 'sleep';
   return (
     <Card style={{ marginTop: 20, overflow: 'hidden' }} pad={0} onPress={onPress} accessibilityLabel={`Now: ${b.title}`}>
-      <View style={{ height: 3, backgroundColor: look.edge === c.lineStrong ? c.ink2 : look.edge }} />
       <View style={{ padding: 16 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-            <View style={{ backgroundColor: c.pen, borderRadius: 5, paddingHorizontal: 6, paddingVertical: 1 }}>
-              <Txt size={10.5} weight={700} color="#fff" lh={16} style={{ letterSpacing: 0.6, textTransform: 'uppercase' }}>
-                Now
-              </Txt>
-            </View>
+            <Pill label="Now" tone="pen" />
             <Txt num size={13} tone="muted">
               {dur(b.end - now)} left
             </Txt>
           </View>
-          <Icon size={18} color={look.edge === c.lineStrong ? c.ink2 : look.edge} />
         </View>
         <Txt size={24} weight={600} display style={{ marginTop: 10 }}>
           {b.title}
@@ -235,7 +233,7 @@ function NowCard({ b, now, onPress, workColor }: { b: PlanBlock; now: number; on
             {clockOf(b.start)}
           </Txt>
           <Txt size={12.5} tone="muted">
-            Why this? →
+            Why this?
           </Txt>
           <Txt num size={11.5} tone="muted">
             {clockOf(b.end)}
@@ -247,13 +245,13 @@ function NowCard({ b, now, onPress, workColor }: { b: PlanBlock; now: number; on
 }
 
 function Stat({ value, label }: { value: string; label: string }) {
-  const { c } = useTheme();
+  const { c, name } = useTheme();
   return (
-    <View style={{ flex: 1, backgroundColor: c.hover, borderRadius: 10, paddingVertical: 12, paddingHorizontal: 8, alignItems: 'center' }}>
-      <Txt num size={17} weight={600}>
+    <View style={{ flex: 1, backgroundColor: c.surface, borderWidth: 1, borderColor: c.line, borderRadius: radius.panel, paddingVertical: 12, paddingHorizontal: 12, ...lift(name) }}>
+      <Txt num size={18} weight={600}>
         {value}
       </Txt>
-      <Txt size={11.5} tone="muted" center style={{ marginTop: 2 }}>
+      <Txt size={12.5} tone="muted" style={{ marginTop: 2 }}>
         {label}
       </Txt>
     </View>

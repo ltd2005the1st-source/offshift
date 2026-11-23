@@ -146,7 +146,7 @@ export function buildPlan(input: PlanInput): Plan {
       start: w.start,
       end: w.end,
       title: s.onCall ? 'On call' : s.type === 'night' ? 'Night shift' : s.type === 'evening' ? 'Evening shift' : 'Day shift',
-      action: `${fmt(w.start)} to ${fmt(w.end)} · ${hours % 1 === 0 ? hours : hours.toFixed(1)} hours`,
+      action: `${fmt(w.start)} to ${fmt(w.end)}, ${hours % 1 === 0 ? hours : hours.toFixed(1)} hours`,
       why: 'Your shift is fixed, so everything else is planned around it.',
       rule: 'work',
       confidence: 'planned',
@@ -552,7 +552,7 @@ export function buildPlan(input: PlanInput): Plan {
         kind: 'free',
         start: t,
         end: s,
-        title: energy === 'good' ? 'Free · good energy' : 'Free · low energy',
+        title: energy === 'good' ? 'Free, good energy' : 'Free, low energy',
         action: energy === 'good' ? 'Best for errands' : 'Keep it easy',
         why:
           energy === 'good'

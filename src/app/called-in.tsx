@@ -91,9 +91,9 @@ export default function CalledIn() {
   return (
     <View style={{ flex: 1, backgroundColor: c.bg, paddingTop: insets.top }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, height: 52 }}>
-        <Label>{stage === 'preview' ? 'Before you confirm' : 'Something changed'}</Label>
-        <Press onPress={() => router.back()} accessibilityRole="button" accessibilityLabel="Close" style={{ width: 34, height: 34, borderRadius: 17, backgroundColor: c.hover, alignItems: 'center', justifyContent: 'center' }}>
-          <X size={18} color={c.ink2} />
+        <View />
+        <Press onPress={() => router.back()} accessibilityRole="button" accessibilityLabel="Close" style={{ width: 36, height: 36, borderRadius: 10, alignItems: 'center', justifyContent: 'center' }}>
+          <X size={18} color={c.muted} />
         </Press>
       </View>
 
@@ -272,7 +272,7 @@ function MiniColumn({ title, plan, now, dim }: { title: string; plan: Plan; now:
       <Txt size={13} weight={600} tone={dim ? 'muted' : 'ink'} style={{ marginBottom: 6 }}>
         {title}
       </Txt>
-      <View style={{ height: 48 * h, borderRadius: 10, backgroundColor: c.sunken, borderWidth: 1, borderColor: c.line, opacity: dim ? 0.6 : 1, overflow: 'hidden' }}>
+      <View style={{ height: 48 * h, borderRadius: 10, backgroundColor: c.sunken, borderWidth: 1, borderColor: c.line, overflow: 'hidden' }}>
         {[...Array(9)].map((_, k) => (
           <View key={k} style={{ position: 'absolute', left: 0, right: 0, top: k * 6 * h, height: 1, backgroundColor: c.line }} />
         ))}
