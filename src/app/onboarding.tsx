@@ -22,7 +22,7 @@ import { Press } from '../ui/Press';
 import { Txt } from '../ui/Text';
 import { Legend, WeekStrips } from '../ui/WeekStrips';
 
-const STEPS = ['welcome', 'role', 'pattern', 'shifts', 'schedule', 'sleep', 'commute', 'anchors', 'daysoff', 'week', 'plus', 'reminders'] as const;
+const STEPS = ['welcome', 'role', 'pattern', 'shifts', 'schedule', 'sleep', 'commute', 'anchors', 'daysoff', 'week', 'reminders'] as const;
 type Step = (typeof STEPS)[number];
 
 export default function Onboarding() {
@@ -38,7 +38,6 @@ export default function Onboarding() {
   const [quiz, setQuiz] = useState<[number, number, number]>([1, 1, 1]);
   const [scheduleChoice, setScheduleChoice] = useState<'sample' | 'grid' | null>(s.shifts.length ? 'sample' : null);
   const [usual, setUsual] = useState<string[]>(['d12', 'n12']);
-  const [billing, setBilling] = useState<'year' | 'month'>('year');
 
   const go = (n: number) => {
     Animated.timing(fade, { toValue: 0, duration: sec(0.16), easing: EASE, useNativeDriver: Platform.OS !== 'web' }).start(() => {
@@ -77,7 +76,6 @@ export default function Onboarding() {
     anchors: 'Build my week',
     daysoff: 'Show my week',
     week: 'Looks good',
-    plus: billing === 'year' ? 'Start 7-day free trial' : 'Start monthly plan',
     reminders: 'Turn on reminders',
   };
 
@@ -118,7 +116,6 @@ export default function Onboarding() {
           {step === 'anchors' ? <AnchorsStep /> : null}
           {step === 'daysoff' ? <DaysOffStep /> : null}
           {step === 'week' ? <WeekStep /> : null}
-          {step === 'plus' ? <PlusStep billing={billing} setBilling={setBilling} /> : null}
           {step === 'reminders' ? <RemindersStep /> : null}
         </ScrollView>
       </Animated.View>
@@ -129,13 +126,10 @@ export default function Onboarding() {
           full
           label={cta[step]}
           disabled={!canContinue}
-          onPress={() => {
-            if (step === 'plus') s.startTrial();
-            next();
-          }}
+          onPress={next}
         />
-        {step === 'plus' || step === 'reminders' ? (
-          <Button big full kind="ghost" label={step === 'plus' ? 'Not now, keep the free version' : 'Maybe later'} onPress={next} />
+        {step === 'reminders' ? (
+          <Button big full kind="ghost" label="Maybe later" onPress={next} />
         ) : null}
       </View>
     </View>
@@ -423,58 +417,6 @@ function WeekStep() {
           <FlipCard t={t} today={today} />
         </View>
       ) : null}
-    </View>
-  );
-}
-
-function PlusStep({ billing, setBilling }: { billing: 'year' | 'month'; setBilling: (v: 'year' | 'month') => void }) {
-  const { c } = useTheme();
-  const feats = [
-    'The full week and every flip plan, like the one you just saw',
-    'A check-in before the drive home after nights',
-    'Lock Screen and home widgets, and a Live Activity during shifts',
-    'A link so family knows when you’re asleep',
-    'Screenshot import when it arrives',
-  ];
-  return (
-    <View>
-      <H title="Keep the whole week planned." sub="Try everything free for 7 days. Cancel any time before it ends and you won’t be charged." />
-      {feats.map((f) => (
-        <View key={f} style={{ flexDirection: 'row', gap: 12, marginBottom: 12 }}>
-          <View style={{ width: 22, height: 22, borderRadius: 11, backgroundColor: c.accentSoft, alignItems: 'center', justifyContent: 'center', marginTop: 1 }}>
-            <Check size={13} color={c.accent} strokeWidth={2.6} />
-          </View>
-          <Txt size={15.5} style={{ flex: 1 }}>
-            {f}
-          </Txt>
-        </View>
-      ))}
-      <View style={{ gap: 10, marginTop: 12 }}>
-        {(
-          [
-            { v: 'year', t: '$29.99 a year', b: '$2.50 a month, 7-day trial', tag: 'Best value' },
-            { v: 'month', t: '$4.99 a month', b: 'No trial, cancel any time' },
-          ] as const
-        ).map((o) => {
-          const on = billing === o.v;
-          return (
-            <Press key={o.v} onPress={() => setBilling(o.v)} haptic sink={0.98} accessibilityRole="radio" accessibilityState={{ selected: on }} style={{ padding: 16, borderRadius: 14, borderWidth: 1.5, borderColor: on ? c.accent : c.line, backgroundColor: on ? c.accentSoft : c.surface }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                <Txt num size={17} weight={600}>
-                  {o.t}
-                </Txt>
-                {'tag' in o ? <Pill label={o.tag} tone="good" /> : null}
-              </View>
-              <Txt size={13.5} tone="muted" style={{ marginTop: 2 }}>
-                {o.b}
-              </Txt>
-            </Press>
-          );
-        })}
-      </View>
-      <Txt size={12} tone="muted" style={{ marginTop: 14 }}>
-        The free version keeps Today, your schedule and basic reminders. Preview build: no payment is taken.
-      </Txt>
     </View>
   );
 }

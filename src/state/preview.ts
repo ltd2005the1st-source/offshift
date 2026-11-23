@@ -50,7 +50,6 @@ function handle(d: Msg) {
       s.loadSampleAnchors();
       s.setProfile({ name: s.profile.name || 'Maya' });
       s.finishOnboarding();
-      if (s.plus === 'none') s.startTrial();
       router.replace('/today');
     }
     if (d.go) router.navigate(d.go as never);

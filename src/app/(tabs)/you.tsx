@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
-import { ShieldCheck, Sparkles } from 'lucide-react-native';
+import { ShieldCheck } from 'lucide-react-native';
 import { useStore } from '../../state/store';
 import type { ThemePref } from '../../state/store';
 import { useTheme } from '../../theme/theme';
@@ -29,30 +29,12 @@ export default function You() {
   const setTheme = useStore((s) => s.setTheme);
   const reminders = useStore((s) => s.reminders);
   const setReminders = useStore((s) => s.setReminders);
-  const plus = useStore((s) => s.plus);
-  const trialStarted = useStore((s) => s.trialStarted);
   const resetAll = useStore((s) => s.resetAll);
   const [confirm, setConfirm] = useState(false);
-  const trialLeft = trialStarted ? Math.max(0, 7 - Math.floor((Date.now() - trialStarted) / 86_400_000)) : 7;
 
   return (
     <Screen>
       <PageHeader title={profile.name || 'Your settings'} sub="Good defaults are already set. Change what doesn’t fit, and the plan follows." />
-
-      <Card style={{ marginBottom: 28, flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-        <View style={{ width: 40, height: 40, borderRadius: 10, backgroundColor: c.accentSoft, alignItems: 'center', justifyContent: 'center' }}>
-          <Sparkles size={19} color={c.accent} />
-        </View>
-        <View style={{ flex: 1 }}>
-          <Txt size={15.5} weight={600}>
-            Offshift Plus
-          </Txt>
-          <Txt size={13} tone="muted">
-            {plus === 'trial' ? `Free trial · ${trialLeft} day${trialLeft === 1 ? '' : 's'} left` : 'Full week, flip plans, drive check, widgets'}
-          </Txt>
-        </View>
-        {plus === 'none' ? <Button label="Try free" kind="line" onPress={() => useStore.getState().startTrial()} /> : null}
-      </Card>
 
       <Section title="About you">
         <Field label="Name" value={profile.name} placeholder="What should Offshift call you?" onChangeText={(name) => setProfile({ name })} />

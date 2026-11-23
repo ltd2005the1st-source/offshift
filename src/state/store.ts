@@ -25,8 +25,6 @@ interface State {
   shifts: Shift[];
   anchors: Anchor[];
   theme: ThemePref;
-  plus: 'none' | 'trial';
-  trialStarted?: number;
   reminders: ReminderPrefs;
   /** Not persisted: lets the preview frame simulate another time of day. */
   nowOverride: number | null;
@@ -41,7 +39,6 @@ interface State {
   replaceShiftsOn: (date: string, shift: Shift | null) => void;
   upsertAnchor: (a: Anchor) => void;
   removeAnchor: (id: string) => void;
-  startTrial: () => void;
   finishOnboarding: () => void;
   resetAll: () => void;
   setNowOverride: (ms: number | null) => void;
@@ -55,7 +52,6 @@ const initial = {
   shifts: [] as Shift[],
   anchors: [] as Anchor[],
   theme: 'night' as ThemePref,
-  plus: 'none' as const,
   reminders: { leave: true, caffeine: true, windDown: true, nap: true, driveCheck: true, duringShift: false },
   nowOverride: null,
 };
@@ -99,7 +95,6 @@ export const useStore = create<State>()(
         set({ anchors: [...rest, a] });
       },
       removeAnchor: (id) => set({ anchors: get().anchors.filter((x) => x.id !== id) }),
-      startTrial: () => set({ plus: 'trial', trialStarted: Date.now() }),
       finishOnboarding: () => set({ onboarded: true }),
       resetAll: () => set({ ...initial, theme: get().theme }),
       setNowOverride: (nowOverride) => set({ nowOverride }),
