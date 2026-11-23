@@ -37,6 +37,13 @@ export function monthYear(date: ISODate) {
 }
 
 /** "Today", "Tomorrow", "Yesterday", else "Thu 26 Nov". */
+/** "Tomorrow, 2 December" near today, else "Wednesday, 2 December". */
+export function dayTitle(date: ISODate, today: ISODate) {
+  const p = parts(date);
+  const near = date === addDays(today, 1) ? 'Tomorrow' : date === addDays(today, -1) ? 'Yesterday' : WD[p.wd];
+  return `${near}, ${p.d} ${MO[p.mo]}`;
+}
+
 export function relDay(date: ISODate, today: ISODate) {
   if (date === today) return 'Today';
   if (date === addDays(today, 1)) return 'Tomorrow';
@@ -45,7 +52,7 @@ export function relDay(date: ISODate, today: ISODate) {
 }
 
 export const t = clockOf;
-export const range = (a: number, b: number) => `${clockOf(a)}–${clockOf(b)}`;
+export const range = (a: number, b: number) => `${clockOf(a)} to ${clockOf(b)}`;
 
 /** "2h 10m", "45m", "7h" */
 export function dur(msv: number) {

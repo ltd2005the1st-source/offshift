@@ -146,7 +146,7 @@ export function buildPlan(input: PlanInput): Plan {
       start: w.start,
       end: w.end,
       title: s.onCall ? 'On call' : s.type === 'night' ? 'Night shift' : s.type === 'evening' ? 'Evening shift' : 'Day shift',
-      action: `${fmt(w.start)}–${fmt(w.end)} · ${hours % 1 === 0 ? hours : hours.toFixed(1)} hours`,
+      action: `${fmt(w.start)} to ${fmt(w.end)} · ${hours % 1 === 0 ? hours : hours.toFixed(1)} hours`,
       why: 'Your shift is fixed, so everything else is planned around it.',
       rule: 'work',
       confidence: 'planned',
@@ -553,11 +553,11 @@ export function buildPlan(input: PlanInput): Plan {
         start: t,
         end: s,
         title: energy === 'good' ? 'Free · good energy' : 'Free · low energy',
-        action: energy === 'good' ? 'Good for errands, plans or exercise' : 'Keep it easy: rest, chores, a walk',
+        action: energy === 'good' ? 'Good for errands or exercise' : 'Keep it easy. A walk or a few chores',
         why:
           energy === 'good'
             ? 'You’ll have been awake a little while but not too long, which is usually when people feel sharpest.'
-            : 'This time is either just after waking, late in a long day or close to bed, when energy is usually lower.',
+            : 'This is close to waking or close to bed, when energy usually dips.',
         rule: 'free',
         confidence: 'planned',
         movable: true,
@@ -604,7 +604,7 @@ export function buildPlan(input: PlanInput): Plan {
       start: s,
       end: e,
       title: variant === 'anchor-nap' ? 'Nap before tonight' : 'Power nap',
-      action: variant === 'anchor-nap' ? `Lie down ${fmt(s)}–${fmt(e)}, alarm set` : `${Math.round((e - s) / MIN)} minutes, alarm set`,
+      action: variant === 'anchor-nap' ? `Lie down ${fmt(s)} to ${fmt(e)}, alarm set` : `${Math.round((e - s) / MIN)} minutes, alarm set`,
       why:
         variant === 'anchor-nap'
           ? 'A nap in the afternoon before your first night means you start the shift with less time awake behind you.'
@@ -645,7 +645,7 @@ function findTransitions(works: Work[], blocks: PlanBlock[], markers: PlanMarker
         if (late) steps.push({ at: late.start, text: `Stay up a little later, bed around ${clockOf(late.start)}` });
         if (late) steps.push({ at: late.end, text: `Sleep in until about ${clockOf(late.end)}` });
         const nap = naps.find((n) => n.end <= w.leave && n.start > w.leave - 12 * HOUR);
-        if (nap) steps.push({ at: nap.start, text: `Nap ${clockOf(nap.start)}–${clockOf(nap.end)} before you leave` });
+        if (nap) steps.push({ at: nap.start, text: `Nap ${clockOf(nap.start)} to ${clockOf(nap.end)} before you leave` });
         steps.push({ at: w.start, text: `Coffee early in the shift is fine. Stop by about ${clockOf(w.start + 6 * HOUR)}` });
         const kind = lastOfRun ? 'single-night' : 'into-nights';
         out.push({
@@ -654,15 +654,15 @@ function findTransitions(works: Work[], blocks: PlanBlock[], markers: PlanMarker
           title: kind === 'single-night' ? 'One night between days' : 'Into nights',
           summary:
             kind === 'single-night'
-              ? 'Treat this night as a one-off: nap before, a short sleep after, and back to your normal bedtime.'
-              : 'Shift your sleep later the day before so the first night feels less like an all-nighter.',
+              ? 'Treat this night as a one-off. Nap before it, sleep a little after, and keep your usual bedtime.'
+              : 'Go to bed later the day before, so the first night feels less like an all-nighter.',
           steps,
         });
       }
       if (lastOfRun && !firstOfRun && w.end >= start && w.end < end) {
         const steps: FlipStep[] = [];
         const rec = sleeps.find((s) => s.start >= w.end && s.start < w.end + 4 * HOUR);
-        if (rec) steps.push({ at: rec.start, text: `Short recovery sleep ${clockOf(rec.start)}–${clockOf(rec.end)}` });
+        if (rec) steps.push({ at: rec.start, text: `Short recovery sleep ${clockOf(rec.start)} to ${clockOf(rec.end)}` });
         if (rec) steps.push({ at: rec.end + 15 * MIN, text: 'Get outside in daylight once you’re up' });
         const cut = markers.find((m) => m.kind === 'caffeine-cutoff' && m.at > w.end && m.at < w.end + 20 * HOUR);
         if (cut) steps.push({ at: cut.at, text: `Last coffee by ${clockOf(cut.at)}` });
@@ -672,7 +672,7 @@ function findTransitions(works: Work[], blocks: PlanBlock[], markers: PlanMarker
           date: toISODate(w.end),
           kind: 'off-nights',
           title: 'Coming off nights',
-          summary: 'A short sleep this morning, a day in the light, and an early night gets you back to days fastest.',
+          summary: 'Sleep a few hours this morning, spend the day in daylight and go to bed early. That gets you back to days fastest.',
           steps,
         });
       }
@@ -686,7 +686,7 @@ function findTransitions(works: Work[], blocks: PlanBlock[], markers: PlanMarker
         summary: `Only ${gapH % 1 === 0 ? gapH : gapH.toFixed(1)} hours between shifts. Sleep comes first; everything else can wait.`,
         steps: sleeps
           .filter((s) => s.start >= prev.end && s.end <= w.start)
-          .map((s) => ({ at: s.start, text: `Straight to bed, ${clockOf(s.start)}–${clockOf(s.end)}` })),
+          .map((s) => ({ at: s.start, text: `Straight to bed, ${clockOf(s.start)} to ${clockOf(s.end)}` })),
       });
     }
   });

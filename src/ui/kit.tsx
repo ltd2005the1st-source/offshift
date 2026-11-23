@@ -149,12 +149,11 @@ export function Section({ title, qualifier, action, children, style }: { title: 
   );
 }
 
-export function PageHeader({ eyebrow, title, right, sub }: { eyebrow: string; title: string; right?: ReactNode; sub?: string }) {
+export function PageHeader({ title, right, sub }: { title: string; right?: ReactNode; sub?: string }) {
   return (
     <View style={{ marginBottom: 22 }}>
       <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', gap: 12 }}>
         <View style={{ flex: 1, minWidth: 0 }}>
-          <Label style={{ marginBottom: 6 }}>{eyebrow}</Label>
           <Txt size={32} weight={600} title>
             {title}
           </Txt>

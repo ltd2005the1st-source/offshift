@@ -37,7 +37,7 @@ export default function You() {
 
   return (
     <Screen>
-      <PageHeader eyebrow="You" title={profile.name || 'Your settings'} sub="Good defaults are already set. Change what doesn’t fit, and the plan follows." />
+      <PageHeader title={profile.name || 'Your settings'} sub="Good defaults are already set. Change what doesn’t fit, and the plan follows." />
 
       <Card style={{ marginBottom: 28, flexDirection: 'row', alignItems: 'center', gap: 12 }}>
         <View style={{ width: 40, height: 40, borderRadius: 10, backgroundColor: c.accentSoft, alignItems: 'center', justifyContent: 'center' }}>

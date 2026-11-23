@@ -82,15 +82,10 @@ export const Timeline = memo(function Timeline({ plan, start, end, now, hourH = 
 
   return (
     <View style={{ height, position: 'relative' }} accessibilityLabel="Timeline">
-      {/* night wash */}
-      {nights.map(([s, e]) => (
-        <View key={s} style={{ position: 'absolute', left: GUTTER - 6, right: 0, top: y(s), height: y(e) - y(s), backgroundColor: c.nightWash, borderRadius: 10 }} />
-      ))}
-
       {/* hour rules and labels */}
       {hours.map((t) => (
         <View key={t} style={{ position: 'absolute', left: 0, right: 0, top: y(t) }} pointerEvents="none">
-          <View style={{ position: 'absolute', left: GUTTER, right: MARKS, top: 0, height: 1, backgroundColor: c.line, opacity: 0.6 }} />
+          <View style={{ position: 'absolute', left: GUTTER, right: MARKS, top: 0, height: 1, backgroundColor: c.line, opacity: 0.45 }} />
           <Txt num size={10.5} color={isNightHour(t) ? c.amber : c.muted} style={{ position: 'absolute', left: 0, width: GUTTER - 10, textAlign: 'right', top: -7, opacity: isNightHour(t) ? 0.8 : 1 }} lh={14}>
             {clockOf(t)}
           </Txt>
@@ -99,7 +94,7 @@ export const Timeline = memo(function Timeline({ plan, start, end, now, hourH = 
 
       {/* date change */}
       {midnights.map((m) => (
-        <View key={`m${m}`} pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: y(m) - 1, zIndex: 3 }}>
+        <View key={`m${m}`} pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: y(m) - 1, zIndex: 0 }}>
           <View style={{ height: 1.5, backgroundColor: c.lineStrong, marginLeft: GUTTER, marginRight: MARKS }} />
           <View style={{ position: 'absolute', right: MARKS + 6, top: -10, backgroundColor: c.bg, paddingHorizontal: 6, borderRadius: 4 }}>
             <Txt size={10.5} weight={600} tone="muted" num lh={18} style={{ letterSpacing: 0.6, textTransform: 'uppercase' }}>
@@ -190,7 +185,8 @@ function BlockView({ b, top, bottom, onPress, workColor, half }: { b: PlanBlock;
         width: half ? '42%' : undefined,
         zIndex: half ? 4 : b.kind === 'free' ? 1 : 2,
         borderRadius: 8,
-        backgroundColor: look.fill === 'transparent' ? undefined : look.fill,
+        // Opaque base, so hour lines never run through the text.
+        backgroundColor: c.bg,
         borderWidth: look.dashed ? 1 : 0,
         borderStyle: look.dashed ? 'dashed' : 'solid',
         borderColor: look.edge,
@@ -198,6 +194,7 @@ function BlockView({ b, top, bottom, onPress, workColor, half }: { b: PlanBlock;
         flexDirection: 'row',
       }}
     >
+      {look.fill !== 'transparent' ? <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: look.fill }} /> : null}
       {!look.dashed ? <View style={{ width: thin ? 2 : 3, backgroundColor: look.edge, opacity: thin ? 0.6 : 1 }} /> : null}
       <View style={{ flex: 1, paddingHorizontal: 9, paddingVertical: compact ? 0 : 6, justifyContent: compact ? 'center' : 'flex-start' }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
@@ -214,7 +211,7 @@ function BlockView({ b, top, bottom, onPress, workColor, half }: { b: PlanBlock;
         </View>
         {!compact ? (
           <Txt num size={12} color={look.sub} numberOfLines={1} style={{ marginTop: 1 }}>
-            {clockOf(b.start)}–{clockOf(b.end)}
+            {clockOf(b.start)} to {clockOf(b.end)}
             {b.kind === 'work' ? '' : `  ·  ${durShort(b.end - b.start)}`}
           </Txt>
         ) : null}

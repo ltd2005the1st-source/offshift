@@ -8,7 +8,7 @@ import { usePlan, useNow, useToday } from '../../state/plan';
 import { useStore } from '../../state/store';
 import { useTheme } from '../../theme/theme';
 import { lookFor, shiftColor } from '../../ui/blockStyle';
-import { dayNum, dur, greeting, longDate, range, relDay, weekdayShort } from '../../ui/format';
+import { dayNum, dayTitle, dur, greeting, longDate, range, relDay, weekdayShort } from '../../ui/format';
 import { Bar, Card, Chip, Dot, LinkAction, Rise, Section } from '../../ui/kit';
 import { BlockSheet, MarkerSheet } from '../../ui/PlanSheets';
 import { Press } from '../../ui/Press';
@@ -99,9 +99,8 @@ export default function Today() {
 
       {/* Hero */}
       <Rise>
-        <Label style={{ marginBottom: 6 }}>{longDate(date)}</Label>
         <Txt size={34} weight={600} title>
-          {isToday ? `${greeting(now)}${profile.name ? `, ${profile.name}` : ''}.` : relDay(date, today)}
+          {isToday ? `${greeting(now)}${profile.name ? `, ${profile.name}` : ''}.` : dayTitle(date, today)}
         </Txt>
         <Txt size={15.5} tone="ink2" style={{ marginTop: 8 }}>
           {daySentence(plan, date, now)}
@@ -144,26 +143,21 @@ export default function Today() {
         <Rise delay={0.12} style={{ marginTop: 22 }}>
           <Section title="Next up">
             {nexts.map((b) => {
-              const look = lookFor(b, c, b.kind === 'work' ? shiftColor(b, presets, shifts) : undefined);
-              const Icon = look.icon;
               return (
-                <Press key={b.id} onPress={() => setBlock(b)} sink={0.98} accessibilityRole="button" style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 9 }}>
-                  <Txt num size={15} weight={600} style={{ width: 50 }}>
-                    {clockOf(b.start)}
-                  </Txt>
-                  <View style={{ width: 30, height: 30, borderRadius: 15, backgroundColor: look.fill === 'transparent' ? c.hover : look.fill, alignItems: 'center', justifyContent: 'center' }}>
-                    <Icon size={15} color={look.edge === c.lineStrong ? c.ink2 : look.edge} />
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Txt size={15} weight={500}>
-                      {b.title}
+                <Press key={b.id} onPress={() => setBlock(b)} sink={0.98} accessibilityRole="button" style={{ flexDirection: 'row', alignItems: 'baseline', gap: 14, paddingVertical: 10 }}>
+                  <View style={{ width: 62 }}>
+                    <Txt num size={15} weight={600}>
+                      {clockOf(b.start)}
                     </Txt>
-                    <Txt size={12.5} tone="muted" numberOfLines={1}>
-                      {b.action}
+                    <Txt num size={12} tone="muted">
+                      in {dur(b.start - now)}
                     </Txt>
                   </View>
-                  <Txt num size={12.5} tone="muted">
-                    in {dur(b.start - now)}
+                  <Txt size={15} lh={21} tone="ink2" style={{ flex: 1 }}>
+                    <Txt size={15} lh={21} weight={600}>
+                      {b.title}.
+                    </Txt>{' '}
+                    {/[.!?]$/.test(b.action) ? b.action : `${b.action}.`}
                   </Txt>
                 </Press>
               );
@@ -187,7 +181,7 @@ export default function Today() {
       {/* Day summary */}
       <View style={{ flexDirection: 'row', gap: 8, marginBottom: 28 }}>
         <Stat value={dur(sleepLast24(plan, isToday ? now : at(date, '23:59')))} label={isToday ? 'Sleep, last 24h' : 'Sleep that day'} />
-        <Stat value={cutoff ? clockOf(cutoff.at) : '—'} label="Last coffee" />
+        <Stat value={cutoff ? clockOf(cutoff.at) : 'None'} label="Last coffee" />
         <Stat value={dur(freeOn(plan, date, isToday ? now : undefined))} label={isToday ? 'Free, rest of today' : 'Free time'} />
       </View>
 

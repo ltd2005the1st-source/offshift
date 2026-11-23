@@ -9,7 +9,7 @@ export type Role = 'rn' | 'lpn' | 'cna' | 'resident' | 'paramedic' | 'other';
 export interface ShiftPreset {
   id: string;
   label: string; // "Day 12"
-  code: string; // "D" — shown on the month grid
+  code: string; // "D", shown on on the month grid
   start: Clock;
   end: Clock;
   type: ShiftType;

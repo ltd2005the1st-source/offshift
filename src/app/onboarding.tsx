@@ -4,10 +4,10 @@ import type { ScrollViewInstance } from 'react-native';
 import { Animated, Platform, ScrollView, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Bell, Camera, Car, Check, ChevronLeft, Coffee, Grid3x3, Moon, MoonStar, Sparkles, Sun } from 'lucide-react-native';
+import { Camera, Car, Check, ChevronLeft, Grid3x3, Moon, Sparkles, Sun } from 'lucide-react-native';
 import type { LucideIcon } from 'lucide-react-native';
 import { NURSE_PRESETS } from '../data/sample';
-import { addDays, clockOf } from '../engine/time';
+import { addDays, clockOf, toISODate } from '../engine/time';
 import type { Anchor, Chronotype, Role } from '../engine/types';
 import { usePlan, useNow, useToday } from '../state/plan';
 import { useStore } from '../state/store';
@@ -19,7 +19,7 @@ import { Field } from '../ui/Field';
 import { FlipCard } from '../ui/FlipCard';
 import { Button, Chip, Pill, Segmented, Stepper } from '../ui/kit';
 import { Press } from '../ui/Press';
-import { Label, Txt } from '../ui/Text';
+import { Txt } from '../ui/Text';
 import { Legend, WeekStrips } from '../ui/WeekStrips';
 
 const STEPS = ['welcome', 'role', 'pattern', 'shifts', 'schedule', 'sleep', 'commute', 'anchors', 'daysoff', 'week', 'plus', 'reminders'] as const;
@@ -142,10 +142,9 @@ export default function Onboarding() {
   );
 }
 
-function H({ eyebrow, title, sub }: { eyebrow?: string; title: string; sub?: string }) {
+function H({ title, sub }: { title: string; sub?: string }) {
   return (
     <View style={{ marginBottom: 24 }}>
-      {eyebrow ? <Label style={{ marginBottom: 8 }}>{eyebrow}</Label> : null}
       <Txt size={30} weight={600} title>
         {title}
       </Txt>
@@ -179,7 +178,6 @@ function OptionCard({ icon: Icon, title, body, on, onPress, right }: { icon?: Lu
         marginBottom: 10,
       }}
     >
-      {Icon ? <Icon size={20} color={on ? c.accent : c.ink2} /> : null}
       <View style={{ flex: 1 }}>
         <Txt size={16} weight={500}>
           {title}
@@ -203,12 +201,11 @@ function Welcome() {
     <View>
       <ClockHero />
       <View style={{ marginTop: 28 }}>
-        <Label style={{ marginBottom: 10 }}>Offshift</Label>
         <Txt size={38} weight={600} title>
-          Your shift is set. Plan the rest.
+          Sleep, naps and coffee, planned around your shifts.
         </Txt>
         <Txt size={16.5} tone="ink2" style={{ marginTop: 14 }}>
-          Offshift turns your work schedule into a plan for sleep, naps, coffee, light and free time, and shows it all on one timeline that runs straight through the night.
+          Add your shifts and Offshift works out when to sleep, when to nap and when to stop caffeine. It all sits on one timeline that keeps going past midnight.
         </Txt>
         <Txt size={13} tone="muted" style={{ marginTop: 18 }}>
           Takes about two minutes. Everything stays on your phone.
@@ -231,7 +228,7 @@ function RoleStep() {
   ];
   return (
     <View>
-      <H eyebrow="About you" title="What do you do?" sub="This sets your shift presets and the words Offshift uses." />
+      <H title="What do you do?" sub="This sets your shift presets and the words Offshift uses." />
       <Field label="Your first name (optional)" value={profile.name} placeholder="Maya" onChangeText={(name) => setProfile({ name })} />
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
         {roles.map((r) => (
@@ -251,11 +248,11 @@ function PatternStep() {
     { v: 'fixed-nights', t: 'Permanent nights', b: 'Nights, with days off in between' },
     { v: 'on-call', t: 'On call', b: 'Some shifts may or may not happen' },
     { v: 'rotation', t: 'A repeating rotation', b: 'Like 2-2-3 or 4 on, 4 off' },
-    { v: 'chaos', t: 'Honestly? It’s chaos', b: 'No pattern at all. That’s fine.' },
+    { v: 'chaos', t: 'No real pattern', b: 'It changes all the time. That’s fine.' },
   ];
   return (
     <View>
-      <H eyebrow="How you work" title="What does your schedule usually look like?" />
+      <H title="What does your schedule usually look like?" />
       {opts.map((o) => (
         <OptionCard key={o.v} title={o.t} body={o.b} on={pattern === o.v} onPress={() => setPattern(o.v)} />
       ))}
@@ -266,14 +263,14 @@ function PatternStep() {
 function ShiftsStep({ usual, setUsual }: { usual: string[]; setUsual: (v: string[]) => void }) {
   return (
     <View>
-      <H eyebrow="Your shifts" title="Which shifts do you work?" sub="Tap all that apply. You can add custom times later." />
+      <H title="Which shifts do you work?" sub="Tap all that apply. You can add custom times later." />
       {NURSE_PRESETS.map((p) => {
         const on = usual.includes(p.id);
         return (
           <OptionCard
             key={p.id}
             title={p.label}
-            body={`${p.start}–${p.end}`}
+            body={`${p.start} to ${p.end}`}
             on={on}
             onPress={() => setUsual(on ? usual.filter((x) => x !== p.id) : [...usual, p.id])}
             right={
@@ -296,8 +293,8 @@ function ShiftsStep({ usual, setUsual }: { usual: string[]; setUsual: (v: string
 function ScheduleStep({ choice, setChoice }: { choice: 'sample' | 'grid' | null; setChoice: (v: 'sample' | 'grid') => void }) {
   return (
     <View>
-      <H eyebrow="Your schedule" title="Let’s get your next few weeks in." sub="The plan is only as good as the schedule behind it." />
-      <OptionCard icon={Camera} title="Screenshot of your roster" body="Coming soon: snap your unit schedule and check it before it saves." right={<Pill label="Soon" tone="accent" />} />
+      <H title="Let’s get your next few weeks in." sub="The plan is only as good as the schedule behind it." />
+      <OptionCard icon={Camera} title="Screenshot of your roster" body="Snap your unit schedule and check it before anything saves." right={<Pill label="Soon" tone="accent" />} />
       <OptionCard icon={Grid3x3} title="Tap days on a calendar" body="Pick days, choose a shift. About a minute for a month." on={choice === 'grid'} onPress={() => setChoice('grid')} />
       <OptionCard icon={Sparkles} title="Show me with a sample fortnight" body="See how Offshift plans a rotating schedule, then swap in yours." on={choice === 'sample'} onPress={() => setChoice('sample')} />
     </View>
@@ -311,11 +308,11 @@ function SleepStep({ quiz, setQuiz }: { quiz: [number, number, number]; setQuiz:
   const Q: { q: string; a: [string, string, string] }[] = [
     { q: 'On a free day, when would you wake up naturally?', a: ['Before 7', '7 to 9', 'After 9'] },
     { q: 'When do you feel sharpest?', a: ['Morning', 'Midday', 'Evening'] },
-    { q: 'With nothing on tomorrow, when do you get sleepy?', a: ['By 22:30', '22:30–00:00', 'After 00:00'] },
+    { q: 'With nothing on tomorrow, when do you get sleepy?', a: ['By 22:30', '22:30 to 00:00', 'After 00:00'] },
   ];
   return (
     <View>
-      <H eyebrow="Sleep basics" title="How do you sleep when nobody’s scheduling you?" />
+      <H title="How do you sleep when nobody’s scheduling you?" />
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: c.line, marginBottom: 18 }}>
         <View style={{ flex: 1 }}>
           <Txt size={16}>Sleep you need</Txt>
@@ -352,7 +349,7 @@ function CommuteStep() {
   const { c } = useTheme();
   return (
     <View>
-      <H eyebrow="Getting there" title="How long is your trip to work?" sub="Used for “leave by” reminders, and so the drive home is part of the plan." />
+      <H title="How long is your trip to work?" sub="Used for “leave by” reminders, and so the drive home is part of the plan." />
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: c.line, marginBottom: 18 }}>
         <Txt size={16}>Each way</Txt>
         <Stepper value={profile.commuteMin} step={5} min={0} max={180} onChange={(commuteMin) => setProfile({ commuteMin })} format={(v) => `${v} min`} />
@@ -380,10 +377,10 @@ function AnchorsStep() {
   const remove = useStore((s) => s.removeAnchor);
   return (
     <View>
-      <H eyebrow="Life anchors" title="Anything your week has to work around?" sub="Tap what fits. You can set exact times in Life later." />
+      <H title="Anything your week has to work around?" sub="Tap what fits. You can set exact times in Life later." />
       {QUICK_ANCHORS.map((a) => {
         const on = anchors.some((x) => x.id === a.id);
-        return <OptionCard key={a.id} title={a.title} body={`${a.days.length === 7 ? 'Every day' : a.days.length === 5 ? 'Weekdays' : 'Some days'} · ${a.start}–${a.end} · ${a.priority === 'must' ? 'has to happen' : 'if it fits'}`} on={on} onPress={() => (on ? remove(a.id) : upsert(a))} />;
+        return <OptionCard key={a.id} title={a.title} body={`${a.days.length === 7 ? 'Every day' : a.days.length === 5 ? 'Weekdays' : 'Some days'} · ${a.start} to ${a.end} · ${a.priority === 'must' ? 'has to happen' : 'if it fits'}`} on={on} onPress={() => (on ? remove(a.id) : upsert(a))} />;
       })}
     </View>
   );
@@ -394,7 +391,7 @@ function DaysOffStep() {
   const setProfile = useStore((s) => s.setProfile);
   return (
     <View>
-      <H eyebrow="Days off" title="On days off between nights, what feels better?" sub="No wrong answer. You can switch any time." />
+      <H title="On days off between nights, what feels better?" sub="No wrong answer. You can switch any time." />
       <OptionCard icon={Sun} title="Flip back to days" body="A short sleep after the last night, then a normal bedtime. Best for family time." on={profile.daysOffStyle === 'flip'} onPress={() => setProfile({ daysOffStyle: 'flip' })} />
       <OptionCard icon={Moon} title="Stay a night owl" body="Keep a late rhythm, bed around 03:00, so the next run of nights is easier." on={profile.daysOffStyle === 'owl'} onPress={() => setProfile({ daysOffStyle: 'owl' })} />
     </View>
@@ -410,21 +407,16 @@ function WeekStep() {
   const explain = useMemo(() => plan.blocks.find((b) => b.kind === 'sleep' && b.variant === 'between-nights') ?? plan.blocks.find((b) => b.kind === 'nap') ?? plan.blocks.find((b) => b.kind === 'sleep'), [plan]);
   return (
     <View>
-      <H eyebrow="Your week" title="Here’s your next seven days." sub={t ? `Your next change is ${t.title.toLowerCase()}, ${t.date === today ? 'today' : t.date === addDays(today, 1) ? 'tomorrow' : 'this week'}. It’s planned step by step.` : 'Sleep, naps and free time, planned around every shift.'} />
+      <H title="Here’s your next seven days." sub={t ? `Your next change is ${t.title.toLowerCase()}, ${t.date === today ? 'today' : t.date === addDays(today, 1) ? 'tomorrow' : 'this week'}. It’s planned step by step.` : 'Sleep, naps and free time, planned around every shift.'} />
       <WeekStrips plan={plan} from={today} today={today} now={now} hourH={13} highlight={t ? [t.date] : []} />
       <Legend />
       {explain ? (
-        <View style={{ marginTop: 22, padding: 14, borderRadius: 12, backgroundColor: c.sleepFill }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-            <MoonStar size={15} color={c.sleepInk} />
-            <Txt size={15} weight={600} color={c.sleepInk}>
-              {explain.title} · {clockOf(explain.start)}–{clockOf(explain.end)}
-            </Txt>
-          </View>
-          <Txt size={14} color={c.sleepInk} style={{ marginTop: 6, opacity: 0.85 }}>
-            {explain.why}
+        <Txt size={15} lh={22} tone="ink2" style={{ marginTop: 22 }}>
+          <Txt size={15} lh={22} weight={600}>
+            {`Why ${explain.title.toLowerCase()} at ${clockOf(explain.start)}? `}
           </Txt>
-        </View>
+          {explain.why}
+        </Txt>
       ) : null}
       {t ? (
         <View style={{ marginTop: 14 }}>
@@ -446,7 +438,7 @@ function PlusStep({ billing, setBilling }: { billing: 'year' | 'month'; setBilli
   ];
   return (
     <View>
-      <H eyebrow="Offshift Plus" title="Keep the whole week planned." sub="Try everything free for 7 days. Cancel any time before it ends and you won’t be charged." />
+      <H title="Keep the whole week planned." sub="Try everything free for 7 days. Cancel any time before it ends and you won’t be charged." />
       {feats.map((f) => (
         <View key={f} style={{ flexDirection: 'row', gap: 12, marginBottom: 12 }}>
           <View style={{ width: 22, height: 22, borderRadius: 11, backgroundColor: c.accentSoft, alignItems: 'center', justifyContent: 'center', marginTop: 1 }}>
@@ -489,6 +481,7 @@ function PlusStep({ billing, setBilling }: { billing: 'year' | 'month'; setBilli
 
 function RemindersStep() {
   const { c } = useTheme();
+  const profile = useStore((st) => st.profile);
   const today = useToday();
   const plan = usePlan(today, 3);
   const now = useNow();
@@ -496,36 +489,47 @@ function RemindersStep() {
   const cut = plan.markers.find((m) => m.kind === 'caffeine-cutoff' && m.at > now && !atWork(m.at));
   const sleep = plan.blocks.find((b) => b.kind === 'sleep' && b.start > now);
   const work = plan.blocks.find((b) => b.kind === 'work' && b.start > now);
+  const day = (t: number) => (toISODate(t) === today ? 'Today' : new Date(t).toLocaleDateString('en-GB', { weekday: 'short' }));
+  const wind = sleep ? sleep.start - profile.windDownMin * 60_000 : 0;
   const items = [
-    work ? { icon: Car, title: `Leave by ${clockOf(work.start - 30 * 60_000)}`, body: `${work.title} starts at ${clockOf(work.start)}.` } : null,
-    cut ? { icon: Coffee, title: `Last coffee by ${clockOf(cut.at)}`, body: 'So it’s worn off by the time you want to sleep.' } : null,
-    sleep ? { icon: MoonStar, title: 'Time to wind down', body: `Bed by ${clockOf(sleep.start)}. Lights low, screens down.` } : null,
-  ].filter(Boolean) as { icon: LucideIcon; title: string; body: string }[];
+    work ? { at: work.start - (profile.commuteMin + 10) * 60_000, lead: `Leave in 10 minutes.`, rest: ` ${work.title} starts at ${clockOf(work.start)}.` } : null,
+    cut ? { at: cut.at, lead: 'Last coffee.', rest: ' Anything after this is still in you at bedtime.' } : null,
+    sleep ? { at: wind, lead: 'Start winding down.', rest: ` Lights low, screens down, bed by ${clockOf(sleep.start)}.` } : null,
+  ]
+    .filter((x): x is { at: number; lead: string; rest: string } => !!x)
+    .sort((a, b) => a.at - b.at);
   return (
     <View>
-      <H eyebrow="Stay in the loop" title="A few gentle nudges, nothing during shifts." sub="These are the exact reminders you’d get next. Each one can be turned off." />
-      {items.map((n, k) => (
-        <View key={k} style={{ flexDirection: 'row', gap: 12, padding: 14, borderRadius: 16, backgroundColor: c.surface, borderWidth: 1, borderColor: c.hairline, marginBottom: 10 }}>
-          <View style={{ width: 36, height: 36, borderRadius: 9, backgroundColor: c.accentSoft, alignItems: 'center', justifyContent: 'center' }}>
-            <n.icon size={18} color={c.accent} />
-          </View>
-          <View style={{ flex: 1 }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              <Txt size={13} weight={600} tone="muted">
-                OFFSHIFT
+      <H title="A few nudges. Never during a shift." sub="Here are the next ones you’d get. Turn any of them off in You." />
+      <View style={{ marginTop: 4 }}>
+        {items.map((n, k) => (
+          <View key={k} style={{ flexDirection: 'row', gap: 16 }}>
+            <View style={{ width: 58, alignItems: 'flex-end', paddingTop: 14 }}>
+              <Txt size={17} weight={600} num>
+                {clockOf(n.at)}
               </Txt>
-              <Bell size={13} color={c.muted} />
+              <Txt size={12} tone="muted">
+                {day(n.at)}
+              </Txt>
             </View>
-            <Txt size={15} weight={600} style={{ marginTop: 2 }}>
-              {n.title}
-            </Txt>
-            <Txt size={13.5} tone="ink2">
-              {n.body}
-            </Txt>
+            <View style={{ width: 9, alignItems: 'center' }}>
+              <View style={{ width: 1, flex: 1, backgroundColor: k === 0 ? 'transparent' : c.line }} />
+              <View style={{ width: 9, height: 9, borderRadius: 5, borderWidth: 1.5, borderColor: c.accent, backgroundColor: c.bg }} />
+              <View style={{ width: 1, flex: 1, backgroundColor: k === items.length - 1 ? 'transparent' : c.line }} />
+            </View>
+            <View style={{ flex: 1, paddingVertical: 14 }}>
+              <Txt size={15.5} lh={22}>
+                <Txt size={15.5} lh={22} weight={600}>
+                  {n.lead}
+                </Txt>
+                <Txt size={15.5} lh={22} tone="ink2">
+                  {n.rest}
+                </Txt>
+              </Txt>
+            </View>
           </View>
-        </View>
-      ))}
+        ))}
+      </View>
     </View>
   );
 }
-

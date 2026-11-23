@@ -16,7 +16,7 @@ function plan(shifts: Shift[], from = '2026-11-23', days = 10, profile: Profile 
 }
 
 const sleeps = (p: Plan) => p.blocks.filter((b) => b.kind === 'sleep');
-const fmt = (b: { start: number; end: number }) => `${toISODate(b.start)} ${clockOf(b.start)}–${clockOf(b.end)}`;
+const fmt = (b: { start: number; end: number }) => `${toISODate(b.start)} ${clockOf(b.start)} to ${clockOf(b.end)}`;
 
 function noOverlaps(p: Plan) {
   const hard = p.blocks.filter((b) => ['work', 'commute', 'sleep', 'nap'].includes(b.kind));
@@ -93,7 +93,7 @@ test('back-to-back double still produces a plan', () => {
 test('drive check after nights, long shifts and the third shift in a row', () => {
   const p = plan([night('2026-11-24')]);
   const d = p.markers.find((m) => m.kind === 'drive-check')!;
-  assert.equal(d.priority, 'normal'); // 07:00 is outside the 4–6 a.m. window
+  assert.equal(d.priority, 'normal'); // 07:00 is outside the 4 to 6 a.m. window
   const p2 = plan([{ id: 'x', date: '2026-11-24', start: '19:00', end: '05:00', type: 'night' }]);
   assert.equal(p2.markers.find((m) => m.kind === 'drive-check')!.priority, 'high');
 });

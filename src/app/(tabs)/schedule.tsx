@@ -57,7 +57,6 @@ export default function Schedule() {
     <View style={{ flex: 1, backgroundColor: c.bg }}>
       <Screen contentContainerStyle={{ paddingBottom: sel.length ? 260 : undefined }}>
         <PageHeader
-          eyebrow="Schedule"
           title={monthYear(month)}
           right={
             <View style={{ flexDirection: 'row' }}>
@@ -155,7 +154,7 @@ export default function Schedule() {
                 {p.label}
               </Txt>
               <Txt num size={14} tone="ink2">
-                {p.start}–{p.end}
+                {p.start} to {p.end}
               </Txt>
             </View>
           ))}
@@ -193,7 +192,7 @@ export default function Schedule() {
           </View>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
             {presets.map((p) => (
-              <Chip key={p.id} label={`${p.code} · ${p.start.replace(':00', '')}–${p.end.replace(':00', '')}`} color={p.color} onPress={() => apply(p.id)} />
+              <Chip key={p.id} label={`${p.code} · ${p.start.replace(':00', '')} to ${p.end.replace(':00', '')}`} color={p.color} onPress={() => apply(p.id)} />
             ))}
             <Chip label="Day off" onPress={() => apply(null)} />
           </View>

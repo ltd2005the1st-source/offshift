@@ -42,8 +42,7 @@ export default function Week() {
   return (
     <Screen>
       <PageHeader
-        eyebrow={offset === 0 ? 'Next seven days' : `Week of ${shortDate(from)}`}
-        title="Your week"
+        title={offset === 0 ? 'Next seven days' : `Week of ${shortDate(from)}`}
         right={
           <View style={{ flexDirection: 'row' }}>
             <IconButton icon={ChevronLeft} label="Previous week" onPress={() => setOffset(offset - 1)} />

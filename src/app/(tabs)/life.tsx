@@ -50,7 +50,7 @@ export default function Life() {
 
   return (
     <Screen>
-      <PageHeader eyebrow="Life" title="Off the clock" sub="What has to happen, when you have time for it, and who needs to know." />
+      <PageHeader title="Off the clock" sub="What has to happen, when you have time for it, and who needs to know." />
 
       <Section title="Free time this week" qualifier="best first">
         {free.length ? (
@@ -70,7 +70,7 @@ export default function Life() {
                   </Txt>
                 </Txt>
                 <Txt size={12.5} tone="muted">
-                  {b.energy === 'good' ? 'Good energy · errands, appointments, plans' : 'Low energy · keep it easy'}
+                  {b.energy === 'good' ? 'Good energy, for errands and appointments' : 'Low energy · keep it easy'}
                 </Txt>
               </View>
               <Txt num size={13} tone="muted">
@@ -107,7 +107,7 @@ export default function Life() {
                   {a.title}
                 </Txt>
                 <Txt num size={12.5} tone="muted">
-                  {daysText(a.days)} · {a.start}–{a.end}
+                  {daysText(a.days)} · {a.start} to {a.end}
                 </Txt>
               </View>
               {a.priority === 'must' ? <Lock size={14} color={c.muted} /> : <Txt size={12} tone="muted">If it fits</Txt>}

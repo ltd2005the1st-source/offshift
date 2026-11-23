@@ -112,17 +112,14 @@ export default function CalledIn() {
                   setKind(k.v);
                   setStage('details');
                 }}
-                style={{ flexDirection: 'row', alignItems: 'center', gap: 14, padding: 16, borderRadius: 14, backgroundColor: c.surface, borderWidth: 1, borderColor: c.hairline, marginBottom: 10 }}
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 15, borderBottomWidth: 1, borderBottomColor: c.line }}
               >
-                <k.icon size={20} color={c.ink2} />
-                <View style={{ flex: 1 }}>
-                  <Txt size={16} weight={500}>
-                    {k.t}
-                  </Txt>
-                  <Txt size={13.5} tone="muted">
-                    {k.b}
-                  </Txt>
-                </View>
+                <Txt size={16} lh={22} tone="muted" style={{ flex: 1 }}>
+                  <Txt size={16} lh={22} weight={600}>
+                    {k.t}.
+                  </Txt>{' '}
+                  {k.b}.
+                </Txt>
                 <ArrowRight size={17} color={c.muted} />
               </Press>
             ))}
@@ -165,7 +162,7 @@ export default function CalledIn() {
                 </View>
                 {replaced ? (
                   <Txt size={13} tone="amber" style={{ marginTop: 10 }}>
-                    This replaces your {replaced.start}–{replaced.end} shift on {relDay(replaced.date, today)}.
+                    This replaces your {replaced.start} to {replaced.end} shift on {relDay(replaced.date, today)}.
                   </Txt>
                 ) : null}
                 <Txt size={12.5} tone="muted" style={{ marginTop: 8 }}>
@@ -177,7 +174,7 @@ export default function CalledIn() {
               current ? (
                 <View>
                   <Txt size={15} tone="ink2" style={{ marginBottom: 12 }}>
-                    {relDay(current.date, today)}’s shift was {current.start}–{current.end}. How much longer?
+                    {relDay(current.date, today)}’s shift was {current.start} to {current.end}. How much longer?
                   </Txt>
                   <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
                     {[30, 60, 120, 240].map((m) => (
@@ -206,7 +203,7 @@ export default function CalledIn() {
                         {relDay(s.date, today)}
                       </Txt>
                       <Txt num size={14.5} tone="ink2">
-                        {s.start}–{s.end}
+                        {s.start} to {s.end}
                       </Txt>
                     </Press>
                   );
@@ -307,8 +304,8 @@ function diff(a: Plan, b: Plan, now: number) {
     if (aKeys.has(key(s))) continue;
     const was = aSleeps.find((o) => o.kind === s.kind && o.start < s.end && s.start < o.end && !bKeys.has(key(o)));
     const day = relDayLoose(s.start, now);
-    if (was) out.push({ text: `${s.kind === 'nap' ? 'Nap' : 'Sleep'} moves to ${day} ${clockOf(s.start)}–${clockOf(s.end)} (was ${clockOf(was.start)}–${clockOf(was.end)})` });
-    else out.push({ text: `${s.kind === 'nap' ? 'New nap' : 'New sleep'} ${day} ${clockOf(s.start)}–${clockOf(s.end)}` });
+    if (was) out.push({ text: `${s.kind === 'nap' ? 'Nap' : 'Sleep'} moves to ${day} ${clockOf(s.start)} to ${clockOf(s.end)} (was ${clockOf(was.start)} to ${clockOf(was.end)})` });
+    else out.push({ text: `${s.kind === 'nap' ? 'New nap' : 'New sleep'} ${day} ${clockOf(s.start)} to ${clockOf(s.end)}` });
   }
   for (const s of aSleeps) {
     if (bKeys.has(key(s))) continue;

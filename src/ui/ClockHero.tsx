@@ -13,8 +13,8 @@ export function ClockHero({ size = 260 }: { size?: number }) {
   const C = 2 * Math.PI * r;
   const cx = size / 2;
   const arcs = [
-    { from: 19, to: 31, color: '#E5A35B', w: 18, delay: 0.1 }, // night shift 19:00–07:00
-    { from: 32, to: 39.5, color: c.sleep, w: 18, delay: 0.5 }, // day sleep 08:00–15:30
+    { from: 19, to: 31, color: '#E5A35B', w: 18, delay: 0.1 }, // night shift 19:00 to 07:00
+    { from: 32, to: 39.5, color: c.sleep, w: 18, delay: 0.5 }, // day sleep 08:00 to 15:30
     { from: 18.5, to: 19, color: c.lineStrong, w: 18, delay: 0.05 }, // commute
     { from: 31, to: 31.5, color: c.lineStrong, w: 18, delay: 0.45 },
   ];

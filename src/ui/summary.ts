@@ -22,14 +22,14 @@ export function daySentence(plan: Plan, date: string, now: number): string {
   const sleep = plan.blocks.find((b) => b.kind === 'sleep' && b.start >= from && b.start < de + 6 * HOUR);
   const trans = plan.transitions.find((t) => t.date === date);
   if (work) {
-    const when = work.start <= from ? 'until' : new Date(work.start).getHours() >= 17 ? 'tonight,' : 'today,';
-    const lead = work.start <= from ? `At work until ${clockOf(work.end)}.` : `${work.title} ${when} ${clockOf(work.start)}–${clockOf(work.end)}.`;
+    const when = !isToday ? '' : new Date(work.start).getHours() >= 17 ? ' tonight' : ' today';
+    const lead = work.start <= from ? `At work until ${clockOf(work.end)}.` : `${work.title}${when}, ${clockOf(work.start)} to ${clockOf(work.end)}.`;
     if (nap && nap.start < work.start) return `${lead} Nap at ${clockOf(nap.start)} first.`;
     if (trans?.kind === 'off-nights') return `${lead} Then a short sleep and an early night.`;
     return lead;
   }
-  if (trans?.kind === 'off-nights') return 'Coming off nights. A short sleep, daylight, then an early night.';
-  if (sleep) return `A day off. ${isToday && sleep.start - now < 4 * HOUR ? 'Bed' : 'Sleep'} at ${clockOf(sleep.start)} tonight.`;
+  if (trans?.kind === 'off-nights') return 'Coming off nights. Sleep a little this morning and go to bed early tonight.';
+  if (sleep) return `A day off. ${isToday && sleep.start - now < 4 * HOUR ? 'Bed' : 'Sleep'} at ${clockOf(sleep.start)}${isToday ? ' tonight' : ''}.`;
   return 'Nothing planned. Enjoy it.';
 }
 

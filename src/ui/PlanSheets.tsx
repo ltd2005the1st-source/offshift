@@ -59,7 +59,7 @@ export function BlockSheet({ block, onClose }: { block: PlanBlock | null; onClos
             <View style={{ flexDirection: 'row', gap: 8, marginTop: 14, backgroundColor: c.amberSoft, borderRadius: 10, padding: 12 }}>
               <AlertTriangle size={16} color={c.amber} style={{ marginTop: 2 }} />
               <Txt size={13.5} tone="ink2" style={{ flex: 1 }}>
-                {b.kind === 'anchor' ? 'This doesn’t fit neatly around sleep today. Keep it if it matters, and the plan works around it as best it can.' : 'Best effort: not every rule fits today, so this plan does the most it can with the time you have.'}
+                {b.kind === 'anchor' ? 'This doesn’t fit neatly around sleep today. Keep it if it matters, and the plan works around it as best it can.' : 'Not every rule fits today, so this plan does what it can with the time you have.'}
               </Txt>
             </View>
           ) : null}
@@ -154,7 +154,7 @@ export function MarkerSheet({ marker, onClose, sleepAt }: { marker: PlanMarker |
                   ? `Sunglasses on${sleepAt ? `, sleep by ${clockOf(sleepAt)}` : ''}. Drive safe.`
                   : answer === 2
                     ? 'Try a 15 to 20 minute nap before you leave. Coffee first, then the nap, works well if the drive is long.'
-                    : 'It might be worth another way home today: a lift, transit or a rideshare. Sleeping at work first is fine too, if that’s allowed.'}
+                    : 'Think about another way home today, like a lift or a taxi. Sleeping at work first is fine too, if that’s allowed.'}
               </Txt>
               <View style={{ marginTop: 12, flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
                 {answer <= 1 ? (
