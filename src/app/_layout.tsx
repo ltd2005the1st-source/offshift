@@ -10,6 +10,7 @@ import { BricolageGrotesque_500Medium } from '@expo-google-fonts/bricolage-grote
 import { BricolageGrotesque_600SemiBold } from '@expo-google-fonts/bricolage-grotesque/600SemiBold';
 import { BricolageGrotesque_700Bold } from '@expo-google-fonts/bricolage-grotesque/700Bold';
 import { ThemeProvider, useTheme } from '../theme/theme';
+import { GOOGLE_FONTS_URL } from '../theme/fonts';
 import { ToastProvider } from '../ui/Sheet';
 import { useStore } from '../state/store';
 import { installPreviewBridge, markPreviewReady, previewMetrics } from '../state/preview';
@@ -30,13 +31,13 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (Platform.OS !== 'web') return;
-    // Bricolage Grotesque, variable, with the optical-size axis (Daybook's setup).
+    // Every font pairing on offer, variable with optical sizes where the face has them.
     const id = 'offshift-font';
     if (!document.getElementById(id)) {
       const link = document.createElement('link');
       link.id = id;
       link.rel = 'stylesheet';
-      link.href = 'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&display=swap';
+      link.href = GOOGLE_FONTS_URL;
       document.head.appendChild(link);
       const style = document.createElement('style');
       style.textContent =

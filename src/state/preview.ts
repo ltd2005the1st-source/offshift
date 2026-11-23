@@ -6,6 +6,7 @@ import type { Metrics } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { useStore } from './store';
 import type { ThemePref } from './store';
+import type { FontPairId } from '../theme/fonts';
 
 export function inFrame(): boolean {
   if (Platform.OS !== 'web' || typeof window === 'undefined') return false;
@@ -21,7 +22,7 @@ export function previewMetrics(): Metrics | null {
   };
 }
 
-type Msg = { type: 'offshift'; now?: number | null; reset?: boolean; skip?: boolean; theme?: ThemePref; go?: string };
+type Msg = { type: 'offshift'; now?: number | null; reset?: boolean; skip?: boolean; theme?: ThemePref; fonts?: FontPairId; go?: string };
 
 let appReady = false;
 const pending: Msg[] = [];
@@ -41,6 +42,7 @@ function handle(d: Msg) {
       if (s.onboarded && !d.go) router.navigate('/today');
     }
     if (d.theme) s.setTheme(d.theme);
+    if (d.fonts) s.setFontPair(d.fonts);
     if (d.reset) {
       s.resetAll();
       router.replace('/onboarding');

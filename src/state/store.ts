@@ -3,6 +3,8 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { DEFAULT_PROFILE, NURSE_PRESETS, SAMPLE_ANCHORS, sampleShifts } from '../data/sample';
 import { toISODate } from '../engine/time';
+import { DEFAULT_PAIR } from '../theme/fonts';
+import type { FontPairId } from '../theme/fonts';
 import type { Anchor, Profile, Shift, ShiftPreset } from '../engine/types';
 
 export type ThemePref = 'night' | 'day' | 'auto';
@@ -25,6 +27,7 @@ interface State {
   shifts: Shift[];
   anchors: Anchor[];
   theme: ThemePref;
+  fontPair: FontPairId;
   plus: 'none' | 'trial';
   trialStarted?: number;
   reminders: ReminderPrefs;
@@ -34,6 +37,7 @@ interface State {
   setProfile: (p: Partial<Profile>) => void;
   setPattern: (p: Pattern) => void;
   setTheme: (t: ThemePref) => void;
+  setFontPair: (f: FontPairId) => void;
   setReminders: (r: Partial<ReminderPrefs>) => void;
   loadSample: () => void;
   loadSampleAnchors: () => void;
@@ -55,6 +59,7 @@ const initial = {
   shifts: [] as Shift[],
   anchors: [] as Anchor[],
   theme: 'night' as ThemePref,
+  fontPair: DEFAULT_PAIR as FontPairId,
   plus: 'none' as const,
   reminders: { leave: true, caffeine: true, windDown: true, nap: true, driveCheck: true, duringShift: false },
   nowOverride: null,
@@ -67,6 +72,7 @@ export const useStore = create<State>()(
       setProfile: (p) => set({ profile: { ...get().profile, ...p } }),
       setPattern: (pattern) => set({ pattern }),
       setTheme: (theme) => set({ theme }),
+      setFontPair: (fontPair) => set({ fontPair }),
       setReminders: (r) => set({ reminders: { ...get().reminders, ...r } }),
       loadSample: () => {
         set({ shifts: sampleShifts(toISODate(Date.now())) });
@@ -101,7 +107,7 @@ export const useStore = create<State>()(
       removeAnchor: (id) => set({ anchors: get().anchors.filter((x) => x.id !== id) }),
       startTrial: () => set({ plus: 'trial', trialStarted: Date.now() }),
       finishOnboarding: () => set({ onboarded: true }),
-      resetAll: () => set({ ...initial }),
+      resetAll: () => set({ ...initial, theme: get().theme, fontPair: get().fontPair }),
       setNowOverride: (nowOverride) => set({ nowOverride }),
     }),
     {

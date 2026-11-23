@@ -3,7 +3,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&family=Fraunces:opsz,wght@9..144,400..700&family=Inter:opsz,wght@14..32,400..700&family=Instrument+Serif&family=DM+Sans:opsz,wght@9..40,400..700&family=Space+Grotesk:wght@400..700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Figtree:wght@400..700&display=swap">
 <style>
   /* Layout: the phone is the hero, a quiet control column beside it (stacks under it on narrow screens).
      Dark-first, like the app: Daybook's type, radii and curve on the Offshift night palette. */
@@ -77,6 +77,19 @@
     transition: background-color calc(.2s / var(--speed)) var(--ease), color calc(.15s / var(--speed)) var(--ease); }
   .seg button[aria-pressed="true"] { background: var(--panel); color: var(--ink); font-weight: 500; box-shadow: 0 1px 2px rgba(0,0,0,.2); }
   .seg button:focus-visible { box-shadow: inset 0 0 0 1.5px var(--ink-2); }
+  .fonts { display: flex; flex-direction: column; gap: 2px; }
+  .font { all: unset; box-sizing: border-box; cursor: pointer; display: grid; grid-template-columns: 30px 1fr; gap: 12px; align-items: start;
+    padding: 10px; margin-inline: -10px; border-radius: 10px; color: var(--ink);
+    transition: background-color calc(.15s / var(--speed)) var(--ease), transform calc(.22s / var(--speed)) var(--ease); }
+  .font:hover { background: var(--hover); }
+  .font:active { transform: scale(.98); transition-duration: calc(.06s / var(--speed)); }
+  .font:focus-visible { box-shadow: inset 0 0 0 1.5px var(--ink-2); }
+  .font[aria-pressed="true"] { background: var(--accent-soft); }
+  .font .n { font-size: 13px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; padding-top: 3px; }
+  .font[aria-pressed="true"] .n { color: var(--accent); }
+  .font .h { display: block; font-size: 21px; line-height: 1.15; }
+  .font .b { display: block; margin-top: 3px; font-size: 13.5px; color: var(--ink-2); }
+  .font .b small { display: block; margin-top: 2px; font-size: 12.5px; color: var(--muted); }
   .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
   .btn { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 8px; font-size: 13.5px; font-weight: 500;
     border: 1px solid var(--line-strong); color: var(--ink);
@@ -116,10 +129,16 @@
 
   <div class="panel">
     <div>
-      <div class="eyebrow">Preview · first build</div>
+      <div class="eyebrow">Preview · font pairings</div>
       <h1>Offshift</h1>
       <p class="lede">The real app, running in your browser inside an iPhone frame. Tap through it the way you would on a phone. The same code runs natively on iPhone and Android.</p>
     </div>
+
+    <section class="sec">
+      <h2>Pick a font pairing</h2>
+      <div class="fonts" id="fonts"></div>
+      <p class="note">Titles use the first font, everything else the second. Try each with a few moments and both looks, then tell me the number you like.</p>
+    </section>
 
     <section class="sec">
       <h2>Try a moment</h2>
@@ -185,6 +204,7 @@
     if (e.source === app.contentWindow && e.data && e.data.type === 'offshift-ready') {
       ready = true;
       send({ theme });
+      send({ fonts });
       if (simulated !== null) send({ now: simulated });
       queue.splice(0).forEach((m) => app.contentWindow.postMessage(m, '*'));
     }
@@ -234,6 +254,28 @@
     home.classList.toggle('dark', theme === 'day');
     send({ theme });
   }));
+  // Font pairings (same list as src/theme/fonts.ts).
+  const PAIRS = [
+    { id: 'fraunces-inter', d: 'Fraunces', dw: 600, t: 'Inter', s: 'Soft serif titles, the clearest small text. Calm at 3 a.m.' },
+    { id: 'instrument-dmsans', d: 'Instrument Serif', dw: 400, t: 'DM Sans', s: 'Elegant editorial titles, a friendly rounded body.' },
+    { id: 'space-plex', d: 'Space Grotesk', dw: 600, t: 'IBM Plex Sans', s: 'Technical and precise, like a good instrument panel.' },
+    { id: 'bricolage-figtree', d: 'Bricolage Grotesque', dw: 600, t: 'Figtree', s: 'Daybook’s character in titles, a quieter body.' },
+  ];
+  let fonts = PAIRS[0].id;
+  const fontList = document.getElementById('fonts');
+  PAIRS.forEach((p, i) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'font'; b.setAttribute('aria-pressed', String(i === 0));
+    b.innerHTML = `<span class="n">${i + 1}</span><span><span class="h" style="font-family:'${p.d}';font-weight:${p.dw}">${p.d}</span>` +
+      `<span class="b" style="font-family:'${p.t}'">+ ${p.t}<small>${p.s}</small></span></span>`;
+    b.addEventListener('click', () => {
+      fonts = p.id;
+      fontList.querySelectorAll('.font').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      send({ fonts });
+    });
+    fontList.appendChild(b);
+  });
+
   document.getElementById('restart').addEventListener('click', () => send({ reset: true }));
   document.getElementById('skip').addEventListener('click', () => send({ skip: true }));
 })();

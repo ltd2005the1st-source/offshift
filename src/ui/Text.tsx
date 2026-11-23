@@ -22,13 +22,16 @@ export interface TxtProps extends TextProps {
 }
 
 export function Txt({ size = 15, weight = 400, tone = 'ink', color, num, display, title, lh, center, style, ...rest }: TxtProps) {
-  const { c } = useTheme();
-  const tracking = title ? -0.028 : display ? -0.02 : num ? 0 : 0.003;
+  const { c, pair } = useTheme();
+  // Titles and big words take the display face; numbers stay in the text face.
+  const isDisplay = !!(title || display || (size >= 20 && !num));
+  const fontSize = isDisplay ? Math.round(size * pair.display.scale * 2) / 2 : size;
+  const tracking = isDisplay ? pair.display.tracking : num ? 0 : 0.003;
   const s: TextStyle = {
-    ...fontFor(weight),
-    fontSize: size,
-    lineHeight: lh ?? Math.round(size * (title ? 1.08 : 1.42)),
-    letterSpacing: size * tracking,
+    ...fontFor(weight, isDisplay ? 'display' : 'text'),
+    fontSize,
+    lineHeight: lh ?? Math.round(fontSize * (title ? 1.08 : isDisplay ? 1.2 : 1.42)),
+    letterSpacing: fontSize * tracking,
     color: color ?? c[tone as keyof Palette],
     textAlign: center ? 'center' : undefined,
     fontVariant: num ? ['tabular-nums'] : undefined,
