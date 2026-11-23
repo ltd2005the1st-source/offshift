@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { Animated, Platform, View } from 'react-native';
 import Svg, { Circle, G, Line, Text as SvgText } from 'react-native-svg';
 import { EASE, fontFor, sec, useTheme } from '../theme/theme';
+import { TEXT } from '../theme/fonts';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
@@ -45,7 +46,7 @@ export function ClockHero({ size = 260 }: { size?: number }) {
               x={cx + Math.cos(a) * rr}
               y={cx + Math.sin(a) * rr + 4}
               fontSize={11}
-              fontFamily={Platform.OS === 'web' ? 'Bricolage Grotesque' : font.fontFamily}
+              fontFamily={Platform.OS === 'web' ? TEXT.family : font.fontFamily}
               fontWeight="600"
               fill={h === 0 ? c.amber : c.muted}
               textAnchor="middle"
@@ -78,7 +79,7 @@ export function ClockHero({ size = 260 }: { size?: number }) {
       </Svg>
       <View style={{ position: 'absolute', inset: 0, alignItems: 'center', justifyContent: 'center' } as never} pointerEvents="none">
         <Animated.Text style={[fontFor(500), { fontSize: 12, color: c.muted, letterSpacing: 0.8, textTransform: 'uppercase', opacity: vals[1] }]}>Then sleep</Animated.Text>
-        <Animated.Text style={[fontFor(600), { fontSize: 30, color: c.ink, fontVariant: ['tabular-nums'], opacity: vals[1], letterSpacing: -0.6 }]}>08:00</Animated.Text>
+        <Animated.Text style={[fontFor(600, 'display'), { fontSize: 30, color: c.ink, fontVariant: ['tabular-nums'], opacity: vals[1], letterSpacing: -0.6 }]}>08:00</Animated.Text>
         <Animated.Text style={[fontFor(400), { fontSize: 12.5, color: c.ink2, opacity: vals[1] }]}>to 15:30</Animated.Text>
       </View>
     </View>

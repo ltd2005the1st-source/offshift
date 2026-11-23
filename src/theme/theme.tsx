@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { Easing, Platform, useColorScheme } from 'react-native';
 import { useStore } from '../state/store';
 import { day, night } from './tokens';
+import { DISPLAY, TEXT } from './fonts';
 import type { Palette, ThemeName } from './tokens';
 
 // ── Motion: Daybook's one curve and one speed dial ──────────────────────────
@@ -11,20 +12,24 @@ export const sec = (s: number) => (s * 1000) / SPEED; // → ms for Animated
 export const ms = (m: number) => Math.round(m / SPEED);
 export const EASE = Easing.bezier(0.65, 0, 0.35, 1);
 
-// ── Type: Bricolage Grotesque for everything ───────────────────────────────
+// ── Type: a display face for titles, a text face for the rest ─────────────
 export type Weight = 400 | 500 | 600 | 700;
-const NATIVE_FAMILY: Record<Weight, string> = {
-  400: 'BricolageGrotesque_400Regular',
-  500: 'BricolageGrotesque_500Medium',
-  600: 'BricolageGrotesque_600SemiBold',
-  700: 'BricolageGrotesque_700Bold',
+const NATIVE_TEXT: Record<Weight, string> = {
+  400: 'IBMPlexSans_400Regular',
+  500: 'IBMPlexSans_500Medium',
+  600: 'IBMPlexSans_600SemiBold',
+  700: 'IBMPlexSans_700Bold',
 };
+const NATIVE_DISPLAY = 'SpaceGrotesk_600SemiBold';
 
-export function fontFor(weight: Weight) {
+export function fontFor(weight: Weight, role: 'text' | 'display' = 'text') {
   if (Platform.OS === 'web') {
-    return { fontFamily: '"Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif', fontWeight: String(weight) as '400' };
+    if (role === 'display') {
+      return { fontFamily: `"${DISPLAY.family}", ui-sans-serif, system-ui, sans-serif`, fontWeight: String(DISPLAY.weight) as '600' };
+    }
+    return { fontFamily: `"${TEXT.family}", ui-sans-serif, system-ui, sans-serif`, fontWeight: String(weight) as '400' };
   }
-  return { fontFamily: NATIVE_FAMILY[weight] };
+  return { fontFamily: role === 'display' ? NATIVE_DISPLAY : NATIVE_TEXT[weight] };
 }
 
 interface ThemeValue {

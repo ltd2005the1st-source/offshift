@@ -101,7 +101,7 @@ export const useStore = create<State>()(
       removeAnchor: (id) => set({ anchors: get().anchors.filter((x) => x.id !== id) }),
       startTrial: () => set({ plus: 'trial', trialStarted: Date.now() }),
       finishOnboarding: () => set({ onboarded: true }),
-      resetAll: () => set({ ...initial }),
+      resetAll: () => set({ ...initial, theme: get().theme }),
       setNowOverride: (nowOverride) => set({ nowOverride }),
     }),
     {
