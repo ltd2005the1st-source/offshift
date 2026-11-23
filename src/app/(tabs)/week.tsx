@@ -72,14 +72,13 @@ export default function Week() {
         {free.length ? (
           free.map((b) => (
             <Press key={b.id} onPress={() => router.navigate({ pathname: '/today', params: { date: toISODate(b.start) } })} sink={0.98} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: c.line, gap: 12 }}>
-              <View style={{ width: 8, height: 8, borderRadius: 4, borderWidth: 1.5, borderColor: c.good }} />
               <Txt size={15} weight={500} style={{ width: 92 }}>
                 {relDay(toISODate(b.start), today)}
               </Txt>
               <Txt num size={14.5} tone="ink2" style={{ flex: 1 }}>
                 {range(b.start, b.end)}
               </Txt>
-              <Txt num size={13} tone="muted">
+              <Txt num size={15} weight={700}>
                 {dur(b.end - b.start)}
               </Txt>
             </Press>

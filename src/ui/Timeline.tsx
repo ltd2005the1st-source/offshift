@@ -147,7 +147,6 @@ export const Timeline = memo(function Timeline({ plan, start, end, now, hourH = 
       {/* now */}
       {now >= start && now <= end ? (
         <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: y(now) - 1, zIndex: 6 }}>
-          <View style={{ position: 'absolute', left: GUTTER - 4, top: -3.5, width: 8, height: 8, borderRadius: 4, backgroundColor: c.pen }} />
           <View style={{ marginLeft: GUTTER, marginRight: MARKS - 4, height: 1.5, backgroundColor: c.pen }} />
           <View style={{ position: 'absolute', left: 0, width: GUTTER - 10, top: -8, alignItems: 'flex-end' }}>
             <View style={{ backgroundColor: c.bg, paddingLeft: 2 }}>
@@ -167,7 +166,7 @@ function BlockView({ b, top, bottom, onPress, workColor, half }: { b: PlanBlock;
   const look = lookFor(b, c, workColor);
   const h = Math.max(bottom - top - 2, 18);
   const Icon = look.icon;
-  const compact = h < 38;
+  const compact = h < 52;
   const roomy = h >= 64;
   const thin = b.kind === 'commute' || b.kind === 'ready';
   return (
@@ -195,10 +194,9 @@ function BlockView({ b, top, bottom, onPress, workColor, half }: { b: PlanBlock;
       }}
     >
       {look.fill !== 'transparent' ? <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: look.fill }} /> : null}
-      {!look.dashed ? <View style={{ width: thin ? 2 : 3, backgroundColor: look.edge, opacity: thin ? 0.6 : 1 }} /> : null}
       <View style={{ flex: 1, paddingHorizontal: 9, paddingVertical: compact ? 0 : 6, justifyContent: compact ? 'center' : 'flex-start' }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-          <Icon size={thin ? 12 : 14} color={look.edge === c.lineStrong ? look.sub : look.edge} strokeWidth={2} />
+          <Icon size={thin ? 12 : 14} color={look.ink} strokeWidth={2} />
           <Txt size={thin ? 12.5 : 14} weight={thin ? 400 : 500} color={look.ink} numberOfLines={1} style={{ flexShrink: 1 }}>
             {b.title}
           </Txt>

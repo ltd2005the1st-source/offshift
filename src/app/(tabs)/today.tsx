@@ -9,7 +9,7 @@ import { useStore } from '../../state/store';
 import { useTheme } from '../../theme/theme';
 import { lookFor, shiftColor } from '../../ui/blockStyle';
 import { dayNum, dayTitle, dur, greeting, longDate, range, relDay, weekdayShort } from '../../ui/format';
-import { Bar, Card, Chip, Dot, LinkAction, Rise, Section } from '../../ui/kit';
+import { Bar, Card, Chip, LinkAction, Rise, Section } from '../../ui/kit';
 import { BlockSheet, MarkerSheet } from '../../ui/PlanSheets';
 import { Press } from '../../ui/Press';
 import { Screen } from '../../ui/Screen';
@@ -87,10 +87,9 @@ export default function Today() {
               <Txt num size={18} weight={on ? 600 : 500} tone={on ? 'ink' : 'ink2'} lh={22}>
                 {dayNum(d)}
               </Txt>
-              <View style={{ height: 6, flexDirection: 'row', gap: 3, alignItems: 'center' }}>
-                {p ? <Dot color={p.color} size={6} /> : null}
-                {flip ? <Dot color={c.amber} size={6} /> : null}
-              </View>
+              <Txt size={10} weight={700} lh={12} color={p ? p.color : 'transparent'}>
+                {p ? p.code : ' '}
+              </Txt>
             </Press>
           );
         })}

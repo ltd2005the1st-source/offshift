@@ -64,7 +64,7 @@ export default function You() {
       </Section>
 
       <Section title="Sleep">
-        <Row label="Sleep you need" hint="Most adults do best with 7 to 9 hours.">
+        <Row label="Sleep you need" hint="Most adults need 7 to 9">
           <Stepper value={profile.sleepNeedH} step={0.25} min={5} max={10} onChange={(sleepNeedH) => setProfile({ sleepNeedH })} format={(v) => `${Math.floor(v)}h${v % 1 ? ` ${Math.round((v % 1) * 60)}m` : ''}`} />
         </Row>
         <View style={{ paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: c.line }}>
@@ -134,7 +134,7 @@ export default function You() {
       </Section>
 
       <Section title="Reminders" qualifier="all on this phone">
-        <Row label="Leave for work" hint="Commute time plus a small buffer.">
+        <Row label="Leave for work" hint="Commute plus a buffer">
           <Switch label="Leave for work" on={reminders.leave} onChange={(leave) => setReminders({ leave })} />
         </Row>
         <Row label="Last coffee">
@@ -149,7 +149,7 @@ export default function You() {
         <Row label="Check-in before the drive home">
           <Switch label="Drive check" on={reminders.driveCheck} onChange={(driveCheck) => setReminders({ driveCheck })} />
         </Row>
-        <Row label="Allow during shifts" hint="Off by default. Your shift comes first." last>
+        <Row label="Allow during shifts" hint="Off by default" last>
           <Switch label="Allow during shifts" on={reminders.duringShift} onChange={(duringShift) => setReminders({ duringShift })} />
         </Row>
       </Section>

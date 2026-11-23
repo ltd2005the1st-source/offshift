@@ -13,7 +13,7 @@ import { usePlan, useNow, useToday } from '../state/plan';
 import { useStore } from '../state/store';
 import type { Pattern } from '../state/store';
 import { EASE, sec, useTheme } from '../theme/theme';
-import { tint } from '../theme/tokens';
+import { inkOn, tint } from '../theme/tokens';
 import { ClockHero } from '../ui/ClockHero';
 import { Field } from '../ui/Field';
 import { FlipCard } from '../ui/FlipCard';
@@ -243,12 +243,12 @@ function PatternStep() {
   const pattern = useStore((s) => s.pattern);
   const setPattern = useStore((s) => s.setPattern);
   const opts: { v: Pattern; t: string; b: string }[] = [
-    { v: 'rotating', t: 'Rotating', b: 'Days and nights, changing week to week' },
+    { v: 'rotating', t: 'Rotating', b: 'Days and nights, mixed' },
     { v: 'fixed-days', t: 'Mostly days', b: 'Daytime shifts, the odd night' },
-    { v: 'fixed-nights', t: 'Permanent nights', b: 'Nights, with days off in between' },
-    { v: 'on-call', t: 'On call', b: 'Some shifts may or may not happen' },
-    { v: 'rotation', t: 'A repeating rotation', b: 'Like 2-2-3 or 4 on, 4 off' },
-    { v: 'chaos', t: 'No real pattern', b: 'It changes all the time. That’s fine.' },
+    { v: 'fixed-nights', t: 'Permanent nights', b: 'Nights, days off between' },
+    { v: 'on-call', t: 'On call', b: 'Shifts might not happen' },
+    { v: 'rotation', t: 'A repeating rotation', b: 'Like 2-2-3' },
+    { v: 'chaos', t: 'No real pattern', b: 'Changes all the time' },
   ];
   return (
     <View>
@@ -274,8 +274,8 @@ function ShiftsStep({ usual, setUsual }: { usual: string[]; setUsual: (v: string
             on={on}
             onPress={() => setUsual(on ? usual.filter((x) => x !== p.id) : [...usual, p.id])}
             right={
-              <View style={{ width: 34, height: 26, borderRadius: 6, backgroundColor: tint(p.color, 0.22), alignItems: 'center', justifyContent: 'center' }}>
-                <Txt size={12} weight={700} color={p.color}>
+              <View style={{ width: 34, height: 26, borderRadius: 4, backgroundColor: p.color, alignItems: 'center', justifyContent: 'center' }}>
+                <Txt size={12} weight={700} color={inkOn(p.color)}>
                   {p.code}
                 </Txt>
               </View>
@@ -294,9 +294,9 @@ function ScheduleStep({ choice, setChoice }: { choice: 'sample' | 'grid' | null;
   return (
     <View>
       <H title="Let’s get your next few weeks in." sub="The plan is only as good as the schedule behind it." />
-      <OptionCard icon={Camera} title="Screenshot of your roster" body="Snap your unit schedule and check it before anything saves." right={<Pill label="Soon" tone="accent" />} />
-      <OptionCard icon={Grid3x3} title="Tap days on a calendar" body="Pick days, choose a shift. About a minute for a month." on={choice === 'grid'} onPress={() => setChoice('grid')} />
-      <OptionCard icon={Sparkles} title="Show me with a sample fortnight" body="See how Offshift plans a rotating schedule, then swap in yours." on={choice === 'sample'} onPress={() => setChoice('sample')} />
+      <OptionCard icon={Camera} title="Screenshot of your roster" body="Snap it, check it, save" right={<Pill label="Soon" tone="accent" />} />
+      <OptionCard icon={Grid3x3} title="Tap days on a calendar" body="About a minute a month" on={choice === 'grid'} onPress={() => setChoice('grid')} />
+      <OptionCard icon={Sparkles} title="Show me with a sample fortnight" body="Try it, then add yours" on={choice === 'sample'} onPress={() => setChoice('sample')} />
     </View>
   );
 }
@@ -392,8 +392,8 @@ function DaysOffStep() {
   return (
     <View>
       <H title="On days off between nights, what feels better?" sub="No wrong answer. You can switch any time." />
-      <OptionCard icon={Sun} title="Flip back to days" body="A short sleep after the last night, then a normal bedtime. Best for family time." on={profile.daysOffStyle === 'flip'} onPress={() => setProfile({ daysOffStyle: 'flip' })} />
-      <OptionCard icon={Moon} title="Stay a night owl" body="Keep a late rhythm, bed around 03:00, so the next run of nights is easier." on={profile.daysOffStyle === 'owl'} onPress={() => setProfile({ daysOffStyle: 'owl' })} />
+      <OptionCard icon={Sun} title="Flip back to days" body="Normal bedtime after nights" on={profile.daysOffStyle === 'flip'} onPress={() => setProfile({ daysOffStyle: 'flip' })} />
+      <OptionCard icon={Moon} title="Stay a night owl" body="Late nights, bed around 03:00" on={profile.daysOffStyle === 'owl'} onPress={() => setProfile({ daysOffStyle: 'owl' })} />
     </View>
   );
 }
@@ -452,7 +452,7 @@ function PlusStep({ billing, setBilling }: { billing: 'year' | 'month'; setBilli
       <View style={{ gap: 10, marginTop: 12 }}>
         {(
           [
-            { v: 'year', t: '$29.99 a year', b: '7 days free, then $2.50 a month billed yearly', tag: 'Best value' },
+            { v: 'year', t: '$29.99 a year', b: '$2.50 a month, 7-day trial', tag: 'Best value' },
             { v: 'month', t: '$4.99 a month', b: 'No trial, cancel any time' },
           ] as const
         ).map((o) => {
@@ -503,19 +503,14 @@ function RemindersStep() {
       <H title="A few nudges. Never during a shift." sub="Here are the next ones you’d get. Turn any of them off in You." />
       <View style={{ marginTop: 4 }}>
         {items.map((n, k) => (
-          <View key={k} style={{ flexDirection: 'row', gap: 16 }}>
-            <View style={{ width: 58, alignItems: 'flex-end', paddingTop: 14 }}>
+          <View key={k} style={{ flexDirection: 'row', gap: 16, borderBottomWidth: 1, borderBottomColor: c.line }}>
+            <View style={{ width: 58, paddingTop: 14 }}>
               <Txt size={17} weight={600} num>
                 {clockOf(n.at)}
               </Txt>
               <Txt size={12} tone="muted">
                 {day(n.at)}
               </Txt>
-            </View>
-            <View style={{ width: 9, alignItems: 'center' }}>
-              <View style={{ width: 1, flex: 1, backgroundColor: k === 0 ? 'transparent' : c.line }} />
-              <View style={{ width: 9, height: 9, borderRadius: 5, borderWidth: 1.5, borderColor: c.accent, backgroundColor: c.bg }} />
-              <View style={{ width: 1, flex: 1, backgroundColor: k === items.length - 1 ? 'transparent' : c.line }} />
             </View>
             <View style={{ flex: 1, paddingVertical: 14 }}>
               <Txt size={15.5} lh={22}>

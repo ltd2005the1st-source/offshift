@@ -7,7 +7,7 @@ import { shiftHours } from '../../engine/plan';
 import { useToday } from '../../state/plan';
 import { useStore } from '../../state/store';
 import { useTheme } from '../../theme/theme';
-import { tint } from '../../theme/tokens';
+import { inkOn, tint } from '../../theme/tokens';
 import { monthYear } from '../../ui/format';
 import { Button, Chip, IconButton, PageHeader, Pill, Section } from '../../ui/kit';
 import { Press } from '../../ui/Press';
@@ -120,8 +120,8 @@ export default function Schedule() {
                       </Txt>
                     </View>
                     {p ? (
-                      <View style={{ alignSelf: 'stretch', borderRadius: 5, backgroundColor: tint(p.color, 0.22), borderLeftWidth: 2, borderLeftColor: p.color, paddingVertical: 2, alignItems: 'center', opacity: out ? 0.5 : 1 }}>
-                        <Txt size={11} weight={700} color={p.color} lh={14}>
+                      <View style={{ alignSelf: 'stretch', borderRadius: 4, backgroundColor: p.color, paddingVertical: 3, alignItems: 'center', opacity: out ? 0.4 : 1 }}>
+                        <Txt size={11.5} weight={700} color={inkOn(p.color)} lh={14}>
                           {p.code}
                         </Txt>
                       </View>
@@ -145,8 +145,8 @@ export default function Schedule() {
         <Section title="Your shifts" qualifier={String(presets.length)}>
           {presets.map((p) => (
             <View key={p.id} style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 11, borderBottomWidth: 1, borderBottomColor: c.line }}>
-              <View style={{ width: 32, height: 26, borderRadius: 6, backgroundColor: tint(p.color, 0.22), alignItems: 'center', justifyContent: 'center' }}>
-                <Txt size={12} weight={700} color={p.color}>
+              <View style={{ width: 32, height: 26, borderRadius: 4, backgroundColor: p.color, alignItems: 'center', justifyContent: 'center' }}>
+                <Txt size={12} weight={700} color={inkOn(p.color)}>
                   {p.code}
                 </Txt>
               </View>

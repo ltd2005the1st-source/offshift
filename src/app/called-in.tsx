@@ -10,7 +10,7 @@ import type { Plan, PlanBlock, Shift } from '../engine/types';
 import { useNow, useToday } from '../state/plan';
 import { useStore } from '../state/store';
 import { useTheme } from '../theme/theme';
-import { tint } from '../theme/tokens';
+import { inkOn, tint } from '../theme/tokens';
 import { clockToMins, minsToClock, TimeStepper } from '../ui/Field';
 import { relDay } from '../ui/format';
 import { Button, Chip } from '../ui/kit';
@@ -22,9 +22,9 @@ type Kind = 'now' | 'extra' | 'late' | 'cancel' | 'oncall';
 
 const KINDS: { v: Kind; t: string; b: string; icon: LucideIcon }[] = [
   { v: 'now', t: 'Called in now', b: 'They need you today', icon: PhoneIncoming },
-  { v: 'extra', t: 'Extra shift later', b: 'Picked up a shift in the next few days', icon: Plus },
+  { v: 'extra', t: 'Extra shift later', b: 'Picked up a shift', icon: Plus },
   { v: 'late', t: 'Asked to stay late', b: 'Your shift is running over', icon: Clock4 },
-  { v: 'cancel', t: 'Shift cancelled', b: 'Low census, sent home, swapped', icon: XCircle },
+  { v: 'cancel', t: 'Shift cancelled', b: 'Sent home or swapped', icon: XCircle },
   { v: 'oncall', t: 'On-call became work', b: 'You’re going in after all', icon: PhoneCall },
 ];
 
@@ -198,7 +198,11 @@ export default function CalledIn() {
                   const on = cancelId === s.id;
                   return (
                     <Press key={s.id} onPress={() => setCancelId(s.id)} haptic sink={0.98} style={{ flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14, borderRadius: 12, borderWidth: 1.5, borderColor: on ? c.accent : c.line, backgroundColor: on ? c.accentSoft : 'transparent', marginBottom: 8 }}>
-                      <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: p?.color ?? c.ink2 }} />
+                      <View style={{ width: 30, height: 24, borderRadius: 4, backgroundColor: p?.color ?? c.ink2, alignItems: 'center', justifyContent: 'center' }}>
+                        <Txt size={11.5} weight={700} color={inkOn(p?.color ?? '#888888')}>
+                          {p?.code ?? '?'}
+                        </Txt>
+                      </View>
                       <Txt size={15.5} weight={500} style={{ flex: 1 }}>
                         {relDay(s.date, today)}
                       </Txt>
@@ -229,8 +233,7 @@ export default function CalledIn() {
             {changes.length ? (
               changes.map((t, k) => (
                 <View key={k} style={{ flexDirection: 'row', gap: 10, paddingVertical: 9, borderBottomWidth: 1, borderBottomColor: c.line }}>
-                  <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: t.warn ? c.amber : c.accent, marginTop: 8 }} />
-                  <Txt size={15} style={{ flex: 1 }}>
+                  <Txt size={15} color={t.warn ? c.amber : undefined} style={{ flex: 1 }}>
                     {t.text}
                   </Txt>
                 </View>
@@ -278,9 +281,9 @@ function MiniColumn({ title, plan, now, dim }: { title: string; plan: Plan; now:
           const bot = ((Math.min(b.end, end) - start) / HOUR) * h;
           const col = b.kind === 'work' ? '#E5A35B' : b.kind === 'sleep' ? c.sleep : b.kind === 'nap' ? c.nap : b.kind === 'anchor' ? (b.color ?? c.good) : c.lineStrong;
           return (
-            <View key={b.id} style={{ position: 'absolute', top, height: Math.max(2, bot - top - 1), left: b.kind === 'anchor' ? '60%' : 4, right: 4, borderRadius: 4, backgroundColor: b.kind === 'sleep' ? c.sleepFill : tint(col.startsWith('#') ? col : '#888888', 0.4), borderLeftWidth: 2, borderLeftColor: col, paddingLeft: 4, justifyContent: 'center' }}>
+            <View key={b.id} style={{ position: 'absolute', top, height: Math.max(2, bot - top - 1), left: b.kind === 'anchor' ? '60%' : 4, right: 4, borderRadius: 4, backgroundColor: b.kind === 'sleep' ? c.sleepFill : b.kind === 'work' || b.kind === 'anchor' ? col : tint(col.startsWith('#') ? col : '#888888', 0.4), paddingLeft: 5, justifyContent: 'center' }}>
               {bot - top > 26 && b.kind !== 'commute' ? (
-                <Txt num size={10.5} color={b.kind === 'sleep' ? c.sleepInk : c.ink} numberOfLines={1}>
+                <Txt num size={10.5} weight={b.kind === 'work' ? 600 : 400} color={b.kind === 'sleep' ? c.sleepInk : b.kind === 'work' || b.kind === 'anchor' ? inkOn(col) : c.ink} numberOfLines={1}>
                   {clockOf(b.start)} {b.kind === 'work' ? 'Work' : b.kind === 'sleep' ? 'Sleep' : b.kind === 'nap' ? 'Nap' : b.title}
                 </Txt>
               ) : null}

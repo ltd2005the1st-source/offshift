@@ -2,7 +2,7 @@ import { Bed, BriefcaseMedical, Car, Coffee, Glasses, Lock, Moon, MoonStar, Leaf
 import type { LucideIcon } from 'lucide-react-native';
 import type { PlanBlock, PlanMarker, ShiftPreset } from '../engine/types';
 import type { Palette } from '../theme/tokens';
-import { tint } from '../theme/tokens';
+import { inkOn, tint } from '../theme/tokens';
 
 export interface BlockLook {
   fill: string;
@@ -25,7 +25,7 @@ export function shiftColor(b: PlanBlock, presets: ShiftPreset[], shifts: { id: s
 export function lookFor(b: PlanBlock, c: Palette, workColor = '#6FA8DC'): BlockLook {
   switch (b.kind) {
     case 'work':
-      return { fill: tint(workColor, 0.2), edge: workColor, ink: c.ink, sub: c.ink2, icon: BriefcaseMedical };
+      return { fill: workColor, edge: workColor, ink: inkOn(workColor), sub: tint(hexOf(inkOn(workColor)), 0.75), icon: BriefcaseMedical };
     case 'commute':
       return { fill: c.commute, edge: c.lineStrong, ink: c.ink2, sub: c.muted, icon: Car };
     case 'sleep':
@@ -37,7 +37,7 @@ export function lookFor(b: PlanBlock, c: Palette, workColor = '#6FA8DC'): BlockL
     case 'ready':
       return { fill: c.hover, edge: c.lineStrong, ink: c.ink2, sub: c.muted, icon: Shirt };
     case 'anchor':
-      return { fill: tint(b.color ?? '#7FB08A', 0.16), edge: b.color ?? '#7FB08A', ink: c.ink, sub: c.ink2, icon: Lock };
+      return { fill: b.color ?? '#7FB08A', edge: b.color ?? '#7FB08A', ink: inkOn(b.color ?? '#7FB08A'), sub: tint(hexOf(inkOn(b.color ?? '#7FB08A')), 0.75), icon: Lock };
     case 'free':
     default:
       return {

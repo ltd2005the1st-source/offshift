@@ -121,6 +121,18 @@ export const radius = {
 } as const;
 
 /** Mix a hex colour with alpha, for tinted block fills. */
+/** Text colour for a solid fill: near-black on light colours, white on dark. */
+export function inkOn(hex: string): string {
+  const h = hex.replace('#', '');
+  if (h.length < 6) return '#FFFFFF';
+  const lin = (i: number) => {
+    const v = parseInt(h.slice(i, i + 2), 16) / 255;
+    return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+  };
+  const L = 0.2126 * lin(0) + 0.7152 * lin(2) + 0.0722 * lin(4);
+  return L > 0.18 ? '#111318' : '#FFFFFF';
+}
+
 export function tint(hex: string, alpha: number): string {
   const h = hex.replace('#', '');
   const r = parseInt(h.slice(0, 2), 16);

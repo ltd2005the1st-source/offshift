@@ -553,7 +553,7 @@ export function buildPlan(input: PlanInput): Plan {
         start: t,
         end: s,
         title: energy === 'good' ? 'Free · good energy' : 'Free · low energy',
-        action: energy === 'good' ? 'Good for errands or exercise' : 'Keep it easy. A walk or a few chores',
+        action: energy === 'good' ? 'Best for errands' : 'Keep it easy',
         why:
           energy === 'good'
             ? 'You’ll have been awake a little while but not too long, which is usually when people feel sharpest.'
@@ -588,7 +588,7 @@ export function buildPlan(input: PlanInput): Plan {
       start: s,
       end: e,
       title: sleepTitle(variant),
-      action: `In bed by ${fmt(s)}, up at ${fmt(e)}`,
+      action: `Up at ${fmt(e)}`,
       why: sleepWhy(variant) + (short ? ' It’s shorter than your usual sleep, so this plan adds rest where it can.' : ''),
       rule: `sleep:${variant}`,
       confidence: short ? 'best-effort' : 'planned',
@@ -604,7 +604,7 @@ export function buildPlan(input: PlanInput): Plan {
       start: s,
       end: e,
       title: variant === 'anchor-nap' ? 'Nap before tonight' : 'Power nap',
-      action: variant === 'anchor-nap' ? `Lie down ${fmt(s)} to ${fmt(e)}, alarm set` : `${Math.round((e - s) / MIN)} minutes, alarm set`,
+      action: variant === 'anchor-nap' ? `Alarm set for ${fmt(e)}` : `${Math.round((e - s) / MIN)} minutes, alarm set`,
       why:
         variant === 'anchor-nap'
           ? 'A nap in the afternoon before your first night means you start the shift with less time awake behind you.'

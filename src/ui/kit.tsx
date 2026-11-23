@@ -4,7 +4,7 @@ import { Animated, Platform, View } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
 import type { LucideIcon } from 'lucide-react-native';
 import { EASE, sec, useTheme } from '../theme/theme';
-import { radius } from '../theme/tokens';
+import { inkOn, radius } from '../theme/tokens';
 import { Press } from './Press';
 import { Label, Txt } from './Text';
 
@@ -234,7 +234,6 @@ export function Chip({ label, on, onPress, color, icon: Icon }: { label: string;
         backgroundColor: on ? c.ink : 'transparent',
       }}
     >
-      {color ? <Dot color={color} size={8} /> : null}
       {Icon ? <Icon size={15} color={on ? c.onInk : c.ink2} strokeWidth={1.8} /> : null}
       <Txt size={13.5} color={on ? c.onInk : c.ink2} weight={on ? 500 : 400}>
         {label}
@@ -364,10 +363,10 @@ export function Empty({ text }: { text: string }) {
 
 export function Pill({ label, tone = 'pen' }: { label: string; tone?: 'pen' | 'amber' | 'accent' | 'good' }) {
   const { c } = useTheme();
-  const bg = tone === 'pen' ? c.penSoft : tone === 'amber' ? c.amberSoft : tone === 'good' ? c.goodSoft : c.accentSoft;
+  const bg = c[tone];
   return (
-    <View style={{ backgroundColor: bg, borderRadius: 6, paddingHorizontal: 7, paddingVertical: 2, alignSelf: 'flex-start' }}>
-      <Txt size={11} weight={600} tone={tone} lh={15}>
+    <View style={{ backgroundColor: bg, borderRadius: 4, paddingHorizontal: 7, paddingVertical: 2, alignSelf: 'flex-start' }}>
+      <Txt size={11} weight={700} color={inkOn(bg)} lh={15}>
         {label}
       </Txt>
     </View>

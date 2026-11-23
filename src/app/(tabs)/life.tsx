@@ -9,7 +9,7 @@ import { useStore } from '../../state/store';
 import { ms, useTheme } from '../../theme/theme';
 import { Field, TimeStepper } from '../../ui/Field';
 import { dur, range, relDay } from '../../ui/format';
-import { Button, Card, Dot, Empty, PageHeader, Pill, Section, Segmented } from '../../ui/kit';
+import { Button, Card, Empty, PageHeader, Pill, Section, Segmented } from '../../ui/kit';
 import { Press } from '../../ui/Press';
 import { Screen } from '../../ui/Screen';
 import { Sheet, useToast } from '../../ui/Sheet';
@@ -59,21 +59,20 @@ export default function Life() {
               key={b.id}
               sink={0.98}
               onPress={() => router.navigate({ pathname: '/today', params: { date: toISODate(b.start) } })}
-              style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 11, borderBottomWidth: 1, borderBottomColor: c.line }}
+              style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 12, paddingVertical: 11, borderBottomWidth: 1, borderBottomColor: c.line }}
             >
-              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: b.energy === 'good' ? c.good : c.lineStrong }} />
+              <Txt size={15} weight={500} style={{ width: 92 }}>
+                {relDay(toISODate(b.start), today)}
+              </Txt>
               <View style={{ flex: 1 }}>
-                <Txt size={15} weight={500}>
-                  {relDay(toISODate(b.start), today)}{' '}
-                  <Txt num size={15} tone="ink2">
-                    {range(b.start, b.end)}
-                  </Txt>
+                <Txt num size={15} tone="ink2">
+                  {range(b.start, b.end)}
                 </Txt>
-                <Txt size={12.5} tone="muted">
-                  {b.energy === 'good' ? 'Good energy, for errands and appointments' : 'Low energy · keep it easy'}
+                <Txt size={12.5} tone={b.energy === 'good' ? 'good' : 'muted'}>
+                  {b.energy === 'good' ? 'Best for errands' : 'Keep it easy'}
                 </Txt>
               </View>
-              <Txt num size={13} tone="muted">
+              <Txt num size={15} weight={700}>
                 {dur(b.end - b.start)}
               </Txt>
             </Press>
@@ -101,7 +100,6 @@ export default function Life() {
         {anchors.length ? (
           anchors.map((a) => (
             <Press key={a.id} onPress={() => setEdit(a)} sink={0.98} style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 11, borderBottomWidth: 1, borderBottomColor: c.line }}>
-              <Dot color={a.color} size={10} />
               <View style={{ flex: 1 }}>
                 <Txt size={15} weight={500}>
                   {a.title}
