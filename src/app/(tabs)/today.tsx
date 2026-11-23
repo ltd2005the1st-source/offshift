@@ -100,7 +100,7 @@ export default function Today() {
       {/* Hero */}
       <Rise>
         <Txt size={34} weight={600} title>
-          {isToday ? `${greeting(now)}${profile.name ? `, ${profile.name}` : ''}.` : dayTitle(date, today)}
+          {isToday ? greeting(now, profile.name) : dayTitle(date, today)}
         </Txt>
         <Txt size={15.5} tone="ink2" style={{ marginTop: 8 }}>
           {daySentence(plan, date, now)}

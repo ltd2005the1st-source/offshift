@@ -64,12 +64,20 @@ export function dur(msv: number) {
   return `${h}h ${r}m`;
 }
 
-export function greeting(now: number) {
+// Three greetings for each part of the day. One is picked at random each
+// time the app opens, then kept for the session so it doesn't flicker.
+const GREETINGS: Record<'late' | 'morning' | 'afternoon' | 'evening', ((n: string) => string)[]> = {
+  late: [(n) => `Still up${n}?`, (n) => `Long night${n}?`, (n) => `Quiet hours${n}.`],
+  morning: [(n) => `Good morning${n}.`, (n) => `Morning${n}.`, (n) => `Up and about${n}?`],
+  afternoon: [(n) => `Good afternoon${n}.`, (n) => `Afternoon${n}.`, (n) => `How’s the day going${n}?`],
+  evening: [(n) => `Good evening${n}.`, (n) => `Evening${n}.`, (n) => `How’s your evening${n}?`],
+};
+const pick = Math.floor(Math.random() * 3);
+
+export function greeting(now: number, name?: string) {
   const h = new Date(now).getHours();
-  if (h < 5) return 'Still up';
-  if (h < 12) return 'Good morning';
-  if (h < 18) return 'Good afternoon';
-  return 'Good evening';
+  const part = h < 5 ? 'late' : h < 12 ? 'morning' : h < 18 ? 'afternoon' : 'evening';
+  return GREETINGS[part][pick](name ? `, ${name}` : '');
 }
 
 export function dateOf(ms: number) {
