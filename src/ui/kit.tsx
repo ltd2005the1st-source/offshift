@@ -134,6 +134,7 @@ export function Section({
   style,
   bare,
   flush,
+  pad,
 }: {
   title: string;
   qualifier?: string;
@@ -144,6 +145,8 @@ export function Section({
   bare?: boolean;
   /** No side padding inside the panel (for edge-to-edge content). */
   flush?: boolean;
+  /** Vertical padding inside the panel, for content that isn't ruled rows. */
+  pad?: boolean;
 }) {
   const { c, name } = useTheme();
   return (
@@ -174,12 +177,13 @@ export function Section({
             borderWidth: 1,
             borderColor: c.line,
             paddingHorizontal: flush ? 0 : 14,
+            paddingVertical: pad ? 14 : 0,
             overflow: 'hidden',
             ...lift(name),
           }}
         >
           {/* rows draw a bottom rule; the last one is clipped by the panel edge */}
-          <View style={{ marginBottom: -1 }}>{children}</View>
+          <View style={{ marginBottom: pad ? 0 : -1 }}>{children}</View>
         </View>
       )}
     </View>
@@ -245,7 +249,7 @@ export function Segmented<T extends string | number>({
             style={{
               flex: full ? 1 : undefined,
               minHeight: 34,
-              paddingHorizontal: 12,
+              paddingHorizontal: full ? 8 : 12,
               borderRadius: 8,
               alignItems: 'center',
               justifyContent: 'center',
@@ -253,7 +257,7 @@ export function Segmented<T extends string | number>({
               ...(on ? { shadowColor: '#000', shadowOpacity: name === 'night' ? 0 : 0.08, shadowRadius: 2, shadowOffset: { width: 0, height: 1 } } : {}),
             }}
           >
-            <Txt size={14} weight={500} tone={on ? 'ink' : 'muted'}>
+            <Txt size={14} weight={500} tone={on ? 'ink' : 'muted'} numberOfLines={1}>
               {o.label}
             </Txt>
           </Press>

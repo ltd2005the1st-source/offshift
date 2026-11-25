@@ -136,7 +136,7 @@ export default function Schedule() {
           Tap several days, then pick a shift. The plan updates as soon as you do.
         </Txt>
 
-        <Section title="Add a whole schedule">
+        <Section title="Add a whole schedule" pad>
           <View style={{ gap: 8 }}>
             <Button big full kind="line" label="Import from a screenshot or feed" icon={CalendarPlus} onPress={() => setImportOpen(true)} />
           </View>

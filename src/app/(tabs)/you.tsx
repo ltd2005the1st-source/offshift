@@ -36,7 +36,7 @@ export default function You() {
     <Screen>
       <PageHeader title={profile.name || 'Your settings'} sub="Good defaults are already set. Change what doesn’t fit, and the plan follows." />
 
-      <Section title="About you">
+      <Section title="About you" pad>
         <Field label="Name" value={profile.name} placeholder="What should Offshift call you?" onChangeText={(name) => setProfile({ name })} />
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
           {ROLES.map((r) => (
@@ -108,7 +108,7 @@ export default function You() {
         <Row label="Commute, each way">
           <Stepper value={profile.commuteMin} step={5} min={0} max={180} onChange={(commuteMin) => setProfile({ commuteMin })} format={(v) => `${v}m`} />
         </Row>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, paddingTop: 12 }}>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, paddingTop: 12, paddingBottom: 14 }}>
           {(['drive', 'transit', 'walk', 'bike'] as const).map((m) => (
             <Chip key={m} label={{ drive: 'Drive', transit: 'Transit', walk: 'Walk', bike: 'Bike' }[m]} on={profile.commuteMode === m} onPress={() => setProfile({ commuteMode: m })} />
           ))}
@@ -136,7 +136,7 @@ export default function You() {
         </Row>
       </Section>
 
-      <Section title="Appearance">
+      <Section title="Appearance" pad>
         <Segmented<ThemePref>
           full
           value={theme}
@@ -152,7 +152,7 @@ export default function You() {
         </Txt>
       </Section>
 
-      <Section title="Privacy">
+      <Section title="Privacy" pad>
         <View style={{ flexDirection: 'row', gap: 10 }}>
           <ShieldCheck size={18} color={c.good} style={{ marginTop: 2 }} />
           <Txt size={14} tone="ink2" style={{ flex: 1 }}>
@@ -161,7 +161,7 @@ export default function You() {
         </View>
       </Section>
 
-      <Section title="Help">
+      <Section title="Help" pad>
         <Txt size={13.5} tone="ink2">
           Offshift gives general planning and wellness guidance. It isn’t medical advice and doesn’t diagnose or treat any condition. If sleep problems carry on, talk to a clinician.
         </Txt>
